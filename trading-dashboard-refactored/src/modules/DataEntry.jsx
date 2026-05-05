@@ -202,7 +202,7 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
     else setSelected(prev=>{ const n=new Set(prev); sorted.forEach(t=>n.add(t.id)); return n; });
   };
 
-  const COLS = "32px 200px 90px 110px 80px 64px";
+  const COLS = "32px 1fr 0.8fr 1fr 0.8fr 80px";
 
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
