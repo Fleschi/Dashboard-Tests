@@ -195,18 +195,18 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           {entry.went_good && (
             <div style={{ background: `${D.green}08`, border: `1px solid ${D.green}20`, borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 11, color: D.green, marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: 6 }}>
-                <span>✓</span> What went well
+              <div style={{ fontSize: 11, color: D.green, marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                What went well
               </div>
-              <div style={{ fontSize: 13, color: D.text, whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{entry.went_good}</div>
+              <div style={{ fontSize: 13, color: D.text, lineHeight: 1.6 }}>{formatBulletPoints(entry.went_good)}</div>
             </div>
           )}
           {entry.went_wrong && (
             <div style={{ background: `${D.red}08`, border: `1px solid ${D.red}20`, borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 11, color: D.red, marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: 6 }}>
-                <span>✗</span> What went wrong
+              <div style={{ fontSize: 11, color: D.red, marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                What went wrong
               </div>
-              <div style={{ fontSize: 13, color: D.text, whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{entry.went_wrong}</div>
+              <div style={{ fontSize: 13, color: D.text, lineHeight: 1.6 }}>{formatBulletPoints(entry.went_wrong)}</div>
             </div>
           )}
         </div>
@@ -215,10 +215,10 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
       {/* Key takeaway - highlighted */}
       {entry.key_takeaway && (
         <div style={{ background: `${D.blue}08`, border: `1px solid ${D.blue}25`, borderRadius: 12, padding: 18 }}>
-          <div style={{ fontSize: 11, color: D.blue, marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", display: "flex", alignItems: "center", gap: 6 }}>
-            <span>💡</span> Key Takeaway
+          <div style={{ fontSize: 11, color: D.blue, marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Key Takeaway
           </div>
-          <div style={{ fontSize: 14, color: D.text, lineHeight: 1.6, fontWeight: 500 }}>{entry.key_takeaway}</div>
+          <div style={{ fontSize: 14, color: D.text, lineHeight: 1.6, fontWeight: 500 }}>{formatBulletPoints(entry.key_takeaway)}</div>
         </div>
       )}
     </div>
@@ -238,6 +238,22 @@ const emptyForm = () => ({
   existingHTFUrl: null,   // already saved URL from DB
   existingExecUrl: null,  // already saved URL from DB
 });
+
+// Convert lines starting with * to bullet points
+function formatBulletPoints(text) {
+  if (!text) return null;
+  return text.split('\n').map((line, i) => {
+    if (line.trim().startsWith('*')) {
+      return (
+        <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
+          <span style={{ flexShrink: 0 }}>•</span>
+          <span>{line.trim().substring(1).trim()}</span>
+        </div>
+      );
+    }
+    return <div key={i} style={{ marginBottom: line.trim() ? 4 : 8 }}>{line}</div>;
+  });
+}
 
 export default function TradeNotebook({ design }) {
   const D = design;
