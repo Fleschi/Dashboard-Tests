@@ -250,6 +250,8 @@ export default function TradeNotebook({ design }) {
   const [uploadingHTF, setUploadingHTF] = useState(false);
   const [uploadingExec, setUploadingExec] = useState(false);
   const [error, setError] = useState(null);
+  const [deletedEntry, setDeletedEntry] = useState(null);
+  const [undoTimeout, setUndoTimeout] = useState(null);
 
   const startEdit = (entry) => {
     setForm({
@@ -272,7 +274,22 @@ export default function TradeNotebook({ design }) {
 
   useEffect(() => {
     loadNotebookEntries()
-      .then(data => { setEntries(data); setLoading(false); })
+      .then(data => {
+        // Sort by parsed date to handle DD/MM/YY HH:MM format correctly
+        const sorted = [...data].sort((a, b) => {
+          const parseDate = (str) => {
+            if (!str) return 0;
+            // Parse DD/MM/YY HH:MM
+            const [datePart, timePart = "00:00"] = str.split(" ");
+            const [dd, mm, yy] = datePart.split("/");
+            const [hh, mn] = timePart.split(":");
+            return new Date(`20${yy}-${mm}-${dd}T${hh}:${mn}`).getTime();
+          };
+          return parseDate(b.time_entered) - parseDate(a.time_entered);
+        });
+        setEntries(sorted);
+        setLoading(false);
+      })
       .catch(e => { setError(e.message); setLoading(false); });
   }, []);
 
@@ -326,10 +343,36 @@ export default function TradeNotebook({ design }) {
 
       if (editingId) {
         const updated = await updateNotebookEntry(editingId, payload);
-        setEntries(prev => prev.map(e => e.id === editingId ? updated : e));
+        setEntries(prev => {
+          const updated_list = prev.map(e => e.id === editingId ? updated : e);
+          // Re-sort after update
+          return updated_list.sort((a, b) => {
+            const parseDate = (str) => {
+              if (!str) return 0;
+              const [datePart, timePart = "00:00"] = str.split(" ");
+              const [dd, mm, yy] = datePart.split("/");
+              const [hh, mn] = timePart.split(":");
+              return new Date(`20${yy}-${mm}-${dd}T${hh}:${mn}`).getTime();
+            };
+            return parseDate(b.time_entered) - parseDate(a.time_entered);
+          });
+        });
       } else {
         const saved = await saveNotebookEntry(payload);
-        setEntries(prev => [saved, ...prev]);
+        setEntries(prev => {
+          const new_list = [saved, ...prev];
+          // Re-sort after save
+          return new_list.sort((a, b) => {
+            const parseDate = (str) => {
+              if (!str) return 0;
+              const [datePart, timePart = "00:00"] = str.split(" ");
+              const [dd, mm, yy] = datePart.split("/");
+              const [hh, mn] = timePart.split(":");
+              return new Date(`20${yy}-${mm}-${dd}T${hh}:${mn}`).getTime();
+            };
+            return parseDate(b.time_entered) - parseDate(a.time_entered);
+          });
+        });
       }
 
       setForm(emptyForm());
@@ -348,6 +391,56 @@ export default function TradeNotebook({ design }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      {/* Undo notification */}
+      {deletedEntry && (
+        <div style={{
+          position: "fixed", top: 20, left: 20, zIndex: 1000,
+          background: D.card, border: `1px solid ${D.border}`, borderRadius: 12,
+          padding: "12px 20px", display: "flex", alignItems: "center", gap: 16,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+        }}>
+          <span style={{ fontSize: 13, color: D.text }}>Entry deleted</span>
+          <button
+            onClick={() => {
+              if (undoTimeout) clearTimeout(undoTimeout);
+              setEntries(prev => {
+                const sorted = [...prev, deletedEntry].sort((a, b) => {
+                  const parseDate = (str) => {
+                    if (!str) return 0;
+                    const [datePart, timePart = "00:00"] = str.split(" ");
+                    const [dd, mm, yy] = datePart.split("/");
+                    const [hh, mn] = timePart.split(":");
+                    return new Date(`20${yy}-${mm}-${dd}T${hh}:${mn}`).getTime();
+                  };
+                  return parseDate(b.time_entered) - parseDate(a.time_entered);
+                });
+                return sorted;
+              });
+              setDeletedEntry(null);
+            }}
+            style={{
+              background: D.blue, color: "#fff", border: "none",
+              borderRadius: 8, padding: "6px 14px", cursor: "pointer",
+              fontSize: 12, fontWeight: 600
+            }}
+          >
+            Undo
+          </button>
+          <button
+            onClick={() => {
+              if (undoTimeout) clearTimeout(undoTimeout);
+              setDeletedEntry(null);
+            }}
+            style={{
+              background: "transparent", color: D.textMuted, border: "none",
+              cursor: "pointer", fontSize: 16, padding: "0 4px"
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ fontSize: 12, color: D.textMuted }}>{entries.length} entries</div>
         <button
@@ -463,7 +556,27 @@ export default function TradeNotebook({ design }) {
             D={D}
             onEdit={startEdit}
             onDelete={async (id) => {
-              try { await deleteNotebookEntry(id); setEntries(prev => prev.filter(x => x.id !== id)); }
+              try {
+                const entryToDelete = entries.find(x => x.id === id);
+                if (!entryToDelete) return;
+
+                // Remove from UI immediately
+                setEntries(prev => prev.filter(x => x.id !== id));
+
+                // Set undo state
+                setDeletedEntry(entryToDelete);
+
+                // Clear any existing timeout
+                if (undoTimeout) clearTimeout(undoTimeout);
+
+                // Actually delete from DB after 5 seconds
+                const timeout = setTimeout(async () => {
+                  await deleteNotebookEntry(id);
+                  setDeletedEntry(null);
+                }, 5000);
+
+                setUndoTimeout(timeout);
+              }
               catch (e) { setError(e.message); }
             }}
           />
