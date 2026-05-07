@@ -133,7 +133,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
 
   const typeColor = entry.type === "Continuation" ? D.green : D.yellow;
   const htfColor  = entry.along_htf === "Yes" ? D.green : D.red;
-  const outcomeColor = entry.outcome === "Win" ? D.green : D.red;
+  const outcomeColor = entry.outcome === "Win" ? D.green : entry.outcome === "Loss" ? D.red : D.yellow;
 
   return (
     <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
@@ -380,8 +380,8 @@ export default function TradeNotebook({ design }) {
             </Field>
             <Field label="Outcome">
               <div style={{ display: "flex", gap: 8 }}>
-                {["Win", "Loss"].map(t => (
-                  <SelBtn key={t} label={t} active={form.outcome === t} color={t === "Win" ? D.green : D.red} onClick={() => set("outcome", t)} />
+                {["Win", "Break Even", "Loss"].map(t => (
+                  <SelBtn key={t} label={t} active={form.outcome === t} color={t === "Win" ? D.green : t === "Loss" ? D.red : D.yellow} onClick={() => set("outcome", t)} />
                 ))}
               </div>
             </Field>
