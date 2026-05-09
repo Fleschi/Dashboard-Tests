@@ -41,84 +41,32 @@ function runMC(trades, simCount, weeks) {
 
 function PathHeatmap({ mcResults, design: D }) {
   const W = 700, H = 300;
-  const PAD = { top: 20, right: 20, bottom: 40, left: 65 };
+  const PAD = { top: 16, right: 16, bottom: 32, left: 56 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
-
-  if (!mcResults || mcResults.length === 0) return null;
-
-  // 1. Extremwerte ermitteln
+  const pathLen = mcResults[0]?.path.length || 0;
+  if (pathLen < 2) return null;
   const allVals = mcResults.flatMap(r => r.path);
-  let rawMin = Math.min(...allVals);
-  let rawMax = Math.max(...allVals);
-
-  // 2. Dynamischen Schritt berechnen (Algorithmus für "schöne" Zahlen)
-  const range = rawMax - rawMin;
-  const targetTicks = 6; // Wir wollen etwa 6 Markierungen an der Achse
-  const rawStep = range / targetTicks;
-
-  // Findet die nächste logische Stufe (10, 25, 50, 100, 250, 500, 1000, etc.)
-  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
-  const residual = rawStep / magnitude;
-  let step;
-  if (residual < 1.5) step = 1 * magnitude;
-  else if (residual < 3) step = 2 * magnitude;
-  else if (residual < 7) step = 5 * magnitude;
-  else step = 10 * magnitude;
-
-  // 3. Grenzen mit kleinem Buffer (5%) festlegen und auf 'step' runden
-  const buffer = range * 0.05;
-  const yMin = Math.floor((rawMin - buffer) / step) * step;
-  const yMax = Math.ceil((rawMax + buffer) / step) * step;
-  const yRange = yMax - yMin;
-
-  // 4. Skalierung & Ticks
-  const xScale = i => PAD.left + (i / (mcResults[0].path.length - 1)) * innerW;
+  const yMin = Math.min(...allVals), yMax = Math.max(...allVals);
+  const yRange = yMax - yMin || 1;
+  const xScale = i => PAD.left + (i / (pathLen - 1)) * innerW;
   const yScale = v => PAD.top + innerH - ((v - yMin) / yRange) * innerH;
-
-  const ticks = [];
-  for (let v = yMin; v <= yMax; v += step) {
-    ticks.push(v);
-  }
-
-  const fmtY = v => v === 0 ? "$0" : (v > 0 ? `+$${v}` : `-$${Math.abs(v)}`);
-
+  const pathToPoints = path => path.map((v, i) => `${xScale(i).toFixed(1)},${yScale(v).toFixed(1)}`).join(" ");
+  const yTickVals = Array.from({ length: 6 }, (_, i) => yMin + (yRange / 5) * i);
+  const fmtY = v => v >= 0 ? `+$${(v/1000).toFixed(1)}k` : `-$${(Math.abs(v)/1000).toFixed(1)}k`;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block", overflow: "visible" }}>
-      {/* Horizontale Hilfslinien */}
-      {ticks.map((v) => (
-        <g key={v}>
-          <line
-            x1={PAD.left} y1={yScale(v)}
-            x2={W - PAD.right} y2={yScale(v)}
-            stroke={D.border}
-            strokeWidth={v === 0 ? "1.5" : "0.5"}
-            strokeDasharray={v === 0 ? "" : "4,4"}
-          />
-          <text
-            x={PAD.left - 10} y={yScale(v) + 4}
-            textAnchor="end" fill={v === 0 ? D.text : D.textMuted}
-            fontSize="11" fontWeight={v === 0 ? "600" : "400"}
-          >
-            {fmtY(v)}
-          </text>
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block" }}>
+      {yTickVals.map((v, i) => (
+        <g key={i}>
+          <line x1={PAD.left} y1={yScale(v)} x2={W - PAD.right} y2={yScale(v)} stroke={D.border} strokeWidth="0.5" strokeDasharray="3,3" />
+          <text x={PAD.left - 6} y={yScale(v) + 4} textAnchor="end" fill={D.textMuted} fontSize="9">{fmtY(v)}</text>
         </g>
       ))}
-
-      {/* Pfade zeichnen */}
-      <g>
-        {mcResults.map((r, i) => (
-          <polyline
-            key={i}
-            points={r.path.map((v, idx) => `${xScale(idx).toFixed(1)},${yScale(v).toFixed(1)}`).join(" ")}
-            fill="none"
-            stroke={r.finalPnl >= 0 ? D.green : D.red}
-            strokeWidth="0.7"
-            strokeOpacity="0.08"
-            style={{ mixBlendMode: 'screen' }} // Hilft bei der Wolkenbildung
-          />
-        ))}
-      </g>
+      {yMin < 0 && yMax > 0 && <line x1={PAD.left} y1={yScale(0)} x2={W - PAD.right} y2={yScale(0)} stroke={D.border} strokeWidth="1" />}
+      {mcResults.map((r, i) => (
+        <polyline key={i} points={pathToPoints(r.path)} fill="none" stroke={r.finalPnl >= 0 ? D.green : D.red} strokeWidth="0.5" strokeOpacity="0.07" />
+      ))}
+      <text x={PAD.left + innerW / 2} y={H - 4} textAnchor="middle" fill={D.textMuted} fontSize="10">months</text>
     </svg>
   );
 }
