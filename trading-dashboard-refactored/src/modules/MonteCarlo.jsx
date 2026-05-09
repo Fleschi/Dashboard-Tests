@@ -22,6 +22,7 @@ function runMC(trades, simCount, weeks) {
   const tradesTotal = Math.min(Math.round(weeks * tradesPerWeek), 1500);
   const snapshotInterval = Math.max(1, Math.round(tradesPerWeek));
   const effectiveSimCount = Math.min(simCount, Math.floor(600000 / Math.max(tradesTotal, 1)));
+  const numSnapshots = Math.floor(tradesTotal / snapshotInterval); // Fixed number of snapshots
   const results = [];
   for (let s = 0; s < effectiveSimCount; s++) {
     let equity = 0, peak = 0, maxDD = 0;
@@ -31,8 +32,12 @@ function runMC(trades, simCount, weeks) {
       if (equity > peak) peak = equity;
       const dd = peak - equity;
       if (dd > maxDD) maxDD = dd;
-      if ((t + 1) % snapshotInterval === 0) path.push(equity);
+      // Take snapshot at regular intervals to keep path lengths consistent
+      if ((t + 1) % snapshotInterval === 0 && path.length < numSnapshots + 1) {
+        path.push(equity);
+      }
     }
+    // Ensure all paths end at the final equity
     if (path[path.length - 1] !== equity) path.push(equity);
     results.push({ finalPnl: equity, maxDD, path });
   }
