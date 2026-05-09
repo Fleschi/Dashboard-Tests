@@ -30,8 +30,8 @@ export default function Settings({ design, onChange }) {
   const lbl = { fontSize: 11, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 6, fontWeight: 600 };
   const reset = () => { onChange(DEFAULT_DESIGN); saveDesign(DEFAULT_DESIGN); };
 
-  // Only show: none (solid) and radial-dual
-  const ALLOWED_BG = ["none", "radial-dual"];
+  // Only show: none (solid), radial-dual, and radial-multi
+  const ALLOWED_BG = ["none", "radial-dual", "radial-multi"];
   const visibleBgs = BACKGROUNDS.filter(b => ALLOWED_BG.includes(b.id));
 
   return (
@@ -74,6 +74,45 @@ export default function Settings({ design, onChange }) {
                       style={{ width: 24, height: 24, borderRadius: "50%", background: c, cursor: "pointer", border: D.radialColor === c ? `2px solid ${D.text}` : "2px solid transparent", transition: "border 0.1s" }} />
                   ))}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Multi-gradient color pickers — only show when radial-multi is active */}
+          {D.background === "radial-multi" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div>
+                <label style={lbl}>Primary Color</label>
+                <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
+                  <input type="color" value={D.multiColor1 || "#a78bfa"}
+                    onChange={e => onChange({ ...D, multiColor1: e.target.value })}
+                    style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
+                  <input type="text" value={D.multiColor1 || "#a78bfa"}
+                    onChange={e => onChange({ ...D, multiColor1: e.target.value })}
+                    style={{ ...inp, width: 140 }} />
+                </div>
+                <label style={{ ...lbl, marginBottom: 4 }}>Opacity</label>
+                <input type="range" min="0" max="1" step="0.05" value={D.multiOpacity1 || 0.25}
+                  onChange={e => onChange({ ...D, multiOpacity1: parseFloat(e.target.value) })}
+                  style={{ width: "100%", accentColor: D.blue }} />
+                <div style={{ fontSize: 11, color: D.textMuted, marginTop: 4 }}>{Math.round((D.multiOpacity1 || 0.25) * 100)}%</div>
+              </div>
+
+              <div>
+                <label style={lbl}>Secondary Color</label>
+                <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
+                  <input type="color" value={D.multiColor2 || "#ffffff"}
+                    onChange={e => onChange({ ...D, multiColor2: e.target.value })}
+                    style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
+                  <input type="text" value={D.multiColor2 || "#ffffff"}
+                    onChange={e => onChange({ ...D, multiColor2: e.target.value })}
+                    style={{ ...inp, width: 140 }} />
+                </div>
+                <label style={{ ...lbl, marginBottom: 4 }}>Opacity</label>
+                <input type="range" min="0" max="1" step="0.05" value={D.multiOpacity2 || 0.15}
+                  onChange={e => onChange({ ...D, multiOpacity2: parseFloat(e.target.value) })}
+                  style={{ width: "100%", accentColor: D.blue }} />
+                <div style={{ fontSize: 11, color: D.textMuted, marginTop: 4 }}>{Math.round((D.multiOpacity2 || 0.15) * 100)}%</div>
               </div>
             </div>
           )}
