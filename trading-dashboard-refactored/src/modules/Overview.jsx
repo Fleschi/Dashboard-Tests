@@ -175,13 +175,13 @@ export default function Overview({ stats, design: D }) {
   ];
 
   const streakItems = [
-    ["Wins",        stats.wins,                      D.green],
-    ["Losses",      stats.losses,                    D.red],
-    ["Break-even",  stats.bes,                       D.yellow],
-    ["Avg Win",     fmt(stats.avgWin),               D.green],
-    ["Avg Loss",    `-$${stats.avgLoss.toFixed(0)}`, D.red],
-    ["Win Streak",  stats.maxWinStreak,              D.green],
-    ["Loss Streak", stats.maxLossStreak,             D.red],
+    ["Wins",        stats.wins,                      D.text],
+    ["Losses",      stats.losses,                    D.text],
+    ["Break-even",  stats.bes,                       D.text],
+    ["Avg Win",     fmt(stats.avgWin),               D.text],
+    ["Avg Loss",    `-$${stats.avgLoss.toFixed(0)}`, D.text],
+    ["Win Streak",  stats.maxWinStreak,              D.text],
+    ["Loss Streak", stats.maxLossStreak,             D.text],
   ];
 
   return (
