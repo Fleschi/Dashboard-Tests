@@ -23,7 +23,7 @@ function runMC(trades, simCount, weeks) {
 
   // FIX 1: Wir speichern JEDEN Trade, nicht nur Intervalle,
   // um die starren "Stränge" zu vermeiden.
-  const effectiveSimCount = Math.min(simCount, 2000);
+  const effectiveSimCount = Math.min(simCount, 500);
   const results = [];
 
   for (let s = 0; s < effectiveSimCount; s++) {
