@@ -102,6 +102,29 @@ export const BACKGROUNDS = [
       </div>
     ),
   },
+  {
+    id: "mesh-gradient",
+    label: "Mesh Gradient",
+    preview: (bg) => ({
+      background: `radial-gradient(circle at 100% 0%, #6366f140, transparent 50%), radial-gradient(circle at 0% 100%, #8b5cf640, transparent 50%), radial-gradient(circle at 100% 100%, #3b82f630, transparent 50%), ${bg}`,
+    }),
+    render: (D) => (
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: `
+            radial-gradient(circle 800px at 100% 0%, ${D.meshColor1 || "#6366f1"}${Math.round((D.meshOpacity1 || 0.35) * 255).toString(16).padStart(2, '0')}, transparent),
+            radial-gradient(circle 700px at 0% 100%, ${D.meshColor2 || "#8b5cf6"}${Math.round((D.meshOpacity2 || 0.35) * 255).toString(16).padStart(2, '0')}, transparent),
+            radial-gradient(circle 600px at 100% 100%, ${D.meshColor3 || "#3b82f6"}${Math.round((D.meshOpacity3 || 0.25) * 255).toString(16).padStart(2, '0')}, transparent),
+            radial-gradient(circle 500px at 0% 0%, ${D.meshColor4 || "#1e1b4b"}${Math.round((D.meshOpacity4 || 0.4) * 255).toString(16).padStart(2, '0')}, transparent),
+            ${D.bg}
+          `,
+          filter: 'blur(80px)',
+        }} />
+      </div>
+    ),
+  },
 ];
 
 // ─── Layout ───────────────────────────────────────────────────────────────────

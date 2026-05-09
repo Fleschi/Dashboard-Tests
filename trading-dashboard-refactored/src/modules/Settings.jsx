@@ -30,8 +30,8 @@ export default function Settings({ design, onChange }) {
   const lbl = { fontSize: 11, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 6, fontWeight: 600 };
   const reset = () => { onChange(DEFAULT_DESIGN); saveDesign(DEFAULT_DESIGN); };
 
-  // Only show: none (solid), radial-dual, and radial-multi
-  const ALLOWED_BG = ["none", "radial-dual", "radial-multi"];
+  // Only show: none (solid), radial-dual, radial-multi, and mesh-gradient
+  const ALLOWED_BG = ["none", "radial-dual", "radial-multi", "mesh-gradient"];
   const visibleBgs = BACKGROUNDS.filter(b => ALLOWED_BG.includes(b.id));
 
   return (
@@ -114,6 +114,35 @@ export default function Settings({ design, onChange }) {
                   style={{ width: "100%", accentColor: D.blue }} />
                 <div style={{ fontSize: 11, color: D.textMuted, marginTop: 4 }}>{Math.round((D.multiOpacity2 || 0.15) * 100)}%</div>
               </div>
+            </div>
+          )}
+
+          {/* Mesh gradient color pickers — only show when mesh-gradient is active */}
+          {D.background === "mesh-gradient" && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              {[
+                { label: "Top Right", colorKey: "meshColor1", opacityKey: "meshOpacity1", defaultColor: "#6366f1", defaultOpacity: 0.35 },
+                { label: "Bottom Left", colorKey: "meshColor2", opacityKey: "meshOpacity2", defaultColor: "#8b5cf6", defaultOpacity: 0.35 },
+                { label: "Bottom Right", colorKey: "meshColor3", opacityKey: "meshOpacity3", defaultColor: "#3b82f6", defaultOpacity: 0.25 },
+                { label: "Top Left", colorKey: "meshColor4", opacityKey: "meshOpacity4", defaultColor: "#1e1b4b", defaultOpacity: 0.4 },
+              ].map(({ label, colorKey, opacityKey, defaultColor, defaultOpacity }) => (
+                <div key={colorKey}>
+                  <label style={lbl}>{label}</label>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
+                    <input type="color" value={D[colorKey] || defaultColor}
+                      onChange={e => onChange({ ...D, [colorKey]: e.target.value })}
+                      style={{ width: 36, height: 36, border: "none", borderRadius: 6, cursor: "pointer", background: "none", padding: 0 }} />
+                    <input type="text" value={D[colorKey] || defaultColor}
+                      onChange={e => onChange({ ...D, [colorKey]: e.target.value })}
+                      style={{ ...inp, fontSize: 11, padding: "6px 10px" }} />
+                  </div>
+                  <label style={{ ...lbl, marginBottom: 4, fontSize: 10 }}>Opacity</label>
+                  <input type="range" min="0" max="1" step="0.05" value={D[opacityKey] || defaultOpacity}
+                    onChange={e => onChange({ ...D, [opacityKey]: parseFloat(e.target.value) })}
+                    style={{ width: "100%", accentColor: D.blue }} />
+                  <div style={{ fontSize: 10, color: D.textMuted, marginTop: 2 }}>{Math.round((D[opacityKey] || defaultOpacity) * 100)}%</div>
+                </div>
+              ))}
             </div>
           )}
         </div>
