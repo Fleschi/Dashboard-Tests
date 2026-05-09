@@ -26,16 +26,12 @@ function runMC(trades, simCount, weeks) {
   for (let s = 0; s < effectiveSimCount; s++) {
     let equity = 0, peak = 0, maxDD = 0;
     const path = [0];
-    let nextSnapshot = Math.max(1, Math.floor(snapshotInterval * (0.7 + Math.random() * 0.6))); // Randomize first snapshot
     for (let t = 0; t < tradesTotal; t++) {
       equity += pnls[Math.floor(Math.random() * pnls.length)];
       if (equity > peak) peak = equity;
       const dd = peak - equity;
       if (dd > maxDD) maxDD = dd;
-      if (t + 1 >= nextSnapshot) {
-        path.push(equity);
-        nextSnapshot = t + 1 + Math.max(1, Math.floor(snapshotInterval * (0.8 + Math.random() * 0.4))); // Randomize interval
-      }
+      if ((t + 1) % snapshotInterval === 0) path.push(equity);
     }
     if (path[path.length - 1] !== equity) path.push(equity);
     results.push({ finalPnl: equity, maxDD, path });
