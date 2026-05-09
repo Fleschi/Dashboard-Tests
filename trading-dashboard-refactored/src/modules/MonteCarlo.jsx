@@ -41,78 +41,84 @@ function runMC(trades, simCount, weeks) {
 
 function PathHeatmap({ mcResults, design: D }) {
   const W = 700, H = 300;
-  const PAD = { top: 30, right: 20, bottom: 40, left: 65 };
+  const PAD = { top: 20, right: 20, bottom: 40, left: 65 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
 
-  const pathLen = mcResults[0]?.path.length || 0;
-  if (pathLen < 2) return null;
+  if (!mcResults || mcResults.length === 0) return null;
 
-  // 1. Absolute Extremwerte finden
+  // 1. Extremwerte ermitteln
   const allVals = mcResults.flatMap(r => r.path);
-  const rawMin = Math.min(...allVals);
-  const rawMax = Math.max(...allVals);
+  let rawMin = Math.min(...allVals);
+  let rawMax = Math.max(...allVals);
 
-  // 2. Buffer hinzufügen (20% in beide Richtungen)
-  const rangeWidth = rawMax - rawMin;
-  const buffer = rangeWidth * 0.2;
+  // 2. Dynamischen Schritt berechnen (Algorithmus für "schöne" Zahlen)
+  const range = rawMax - rawMin;
+  const targetTicks = 6; // Wir wollen etwa 6 Markierungen an der Achse
+  const rawStep = range / targetTicks;
 
-  // 3. "Schöne" Grenzen berechnen (Aufrunden auf glatte Zahlen)
-  // Wir wählen ein Intervall, z.B. 500 oder 1000, basierend auf der Range
-  const step = rangeWidth > 5000 ? 1000 : 500;
+  // Findet die nächste logische Stufe (10, 25, 50, 100, 250, 500, 1000, etc.)
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const residual = rawStep / magnitude;
+  let step;
+  if (residual < 1.5) step = 1 * magnitude;
+  else if (residual < 3) step = 2 * magnitude;
+  else if (residual < 7) step = 5 * magnitude;
+  else step = 10 * magnitude;
+
+  // 3. Grenzen mit kleinem Buffer (5%) festlegen und auf 'step' runden
+  const buffer = range * 0.05;
   const yMin = Math.floor((rawMin - buffer) / step) * step;
   const yMax = Math.ceil((rawMax + buffer) / step) * step;
   const yRange = yMax - yMin;
 
-  // 4. Skalierungsfunktionen
-  const xScale = i => PAD.left + (i / (pathLen - 1)) * innerW;
+  // 4. Skalierung & Ticks
+  const xScale = i => PAD.left + (i / (mcResults[0].path.length - 1)) * innerW;
   const yScale = v => PAD.top + innerH - ((v - yMin) / yRange) * innerH;
 
-  // 5. Ticks generieren (Alle 'step' Dollar eine Markierung)
   const ticks = [];
   for (let v = yMin; v <= yMax; v += step) {
     ticks.push(v);
   }
 
-  const pathToPoints = path => path.map((v, i) => `${xScale(i).toFixed(1)},${yScale(v).toFixed(1)}`).join(" ");
-  const fmtY = v => v === 0 ? "$0" : (v >= 0 ? `+$${v.toLocaleString()}` : `-$${Math.abs(v).toLocaleString()}`);
+  const fmtY = v => v === 0 ? "$0" : (v > 0 ? `+$${v}` : `-$${Math.abs(v)}`);
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", display: "block", overflow: "visible" }}>
-      {/* Horizontale Linien & Beschriftung */}
+      {/* Horizontale Hilfslinien */}
       {ticks.map((v) => (
         <g key={v}>
           <line
             x1={PAD.left} y1={yScale(v)}
             x2={W - PAD.right} y2={yScale(v)}
-            stroke={D.border} strokeWidth="0.5"
-            strokeDasharray={v === 0 ? "" : "3,3"}
-            opacity={v === 0 ? 1 : 0.5}
+            stroke={D.border}
+            strokeWidth={v === 0 ? "1.5" : "0.5"}
+            strokeDasharray={v === 0 ? "" : "4,4"}
           />
           <text
-            x={PAD.left - 8} y={yScale(v) + 3}
-            textAnchor="end" fill={D.textMuted} fontSize="10" fontWeight={v === 0 ? "bold" : "normal"}
+            x={PAD.left - 10} y={yScale(v) + 4}
+            textAnchor="end" fill={v === 0 ? D.text : D.textMuted}
+            fontSize="11" fontWeight={v === 0 ? "600" : "400"}
           >
             {fmtY(v)}
           </text>
         </g>
       ))}
 
-      {/* Die Pfade */}
+      {/* Pfade zeichnen */}
       <g>
         {mcResults.map((r, i) => (
           <polyline
             key={i}
-            points={pathToPoints(r.path)}
+            points={r.path.map((v, idx) => `${xScale(idx).toFixed(1)},${yScale(v).toFixed(1)}`).join(" ")}
             fill="none"
             stroke={r.finalPnl >= 0 ? D.green : D.red}
-            strokeWidth="0.8"
+            strokeWidth="0.7"
             strokeOpacity="0.08"
+            style={{ mixBlendMode: 'screen' }} // Hilft bei der Wolkenbildung
           />
         ))}
       </g>
-
-      <text x={PAD.left + innerW / 2} y={H - 5} textAnchor="middle" fill={D.textMuted} fontSize="11">Simulation Timeline (Trades)</text>
     </svg>
   );
 }
