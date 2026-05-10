@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BACKGROUNDS } from "../constants.jsx";
 
 const STORAGE_KEY = "trading_dashboard_design";
@@ -24,6 +24,7 @@ function saveDesign(design) {
 
 export default function Settings({ design, onChange }) {
   const D = design;
+  const [showColors, setShowColors] = useState(false);
   useEffect(() => { saveDesign(design); }, [design]);
 
   const inp = { padding: "8px 14px", background: D.bg, border: `1px solid ${D.border}`, borderRadius: 8, color: D.text, fontSize: 13, fontFamily: "monospace", width: "100%", outline: "none" };
@@ -147,46 +148,70 @@ export default function Settings({ design, onChange }) {
           )}
         </div>
 
-        {/* Custom colors — sidebar removed */}
+        {/* Color customization toggle */}
         <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 20, color: D.text }}>Colors</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
-            {[
-              ["Background", "bg"],
-              ["Card",       "card"],
-              ["Border",     "border"],
-              ["Accent",     "blue"],
-              ["Text",       "text"],
-              ["Text Muted", "textMuted"],
-            ].map(([label, key]) => (
-              <div key={key}>
-                <label style={lbl}>{label}</label>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <input type="color" value={D[key] || "#000000"}
-                    onChange={e => onChange({ ...D, [key]: e.target.value, ...(key === "blue" ? { purple: e.target.value } : {}) })}
-                    style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
-                  <input type="text" value={D[key] || ""} onChange={e => onChange({ ...D, [key]: e.target.value, ...(key === "blue" ? { purple: e.target.value } : {}) })} style={inp} />
-                </div>
-              </div>
-            ))}
-          </div>
+          <button
+            onClick={() => setShowColors(!showColors)}
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 0
+            }}
+          >
+            <div style={{ fontSize: 15, fontWeight: 600, color: D.text }}>Color Customization</div>
+            <div style={{ fontSize: 18, color: D.textMuted }}>{showColors ? "−" : "+"}</div>
+          </button>
         </div>
 
-        {/* Win/Loss */}
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 20, color: D.text }}>Win / Loss Colors</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 18 }}>
-            {[["Win", "green"], ["Loss", "red"], ["Break-even", "yellow"]].map(([label, key]) => (
-              <div key={key}>
-                <label style={lbl}>{label}</label>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <input type="color" value={D[key] || "#000000"} onChange={e => onChange({ ...D, [key]: e.target.value })} style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
-                  <input type="text" value={D[key] || ""} onChange={e => onChange({ ...D, [key]: e.target.value })} style={inp} />
-                </div>
+        {/* Custom colors — only show when toggled */}
+        {showColors && (
+          <>
+            <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 20, color: D.text }}>Colors</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+                {[
+                  ["Background", "bg"],
+                  ["Card",       "card"],
+                  ["Border",     "border"],
+                  ["Accent",     "blue"],
+                  ["Text",       "text"],
+                  ["Text Muted", "textMuted"],
+                ].map(([label, key]) => (
+                  <div key={key}>
+                    <label style={lbl}>{label}</label>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <input type="color" value={D[key] || "#000000"}
+                        onChange={e => onChange({ ...D, [key]: e.target.value, ...(key === "blue" ? { purple: e.target.value } : {}) })}
+                        style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
+                      <input type="text" value={D[key] || ""} onChange={e => onChange({ ...D, [key]: e.target.value, ...(key === "blue" ? { purple: e.target.value } : {}) })} style={inp} />
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+
+            {/* Win/Loss */}
+            <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 20, color: D.text }}>Win / Loss Colors</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 18 }}>
+                {[["Win", "green"], ["Loss", "red"], ["Break-even", "yellow"]].map(([label, key]) => (
+                  <div key={key}>
+                    <label style={lbl}>{label}</label>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <input type="color" value={D[key] || "#000000"} onChange={e => onChange({ ...D, [key]: e.target.value })} style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
+                      <input type="text" value={D[key] || ""} onChange={e => onChange({ ...D, [key]: e.target.value })} style={inp} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         <button onClick={reset} style={{ padding: "10px 24px", background: "transparent", border: `1px solid ${D.border}`, borderRadius: 10, color: D.textMuted, cursor: "pointer", fontSize: 13, alignSelf: "flex-start" }}>
           Reset to default
