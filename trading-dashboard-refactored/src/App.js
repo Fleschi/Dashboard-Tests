@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTradeData, useIsMobile, useDesign, useNavigation } from "./hooks";
 import { BACK_MODULES, FWD_MODULES, SETTINGS_MODULE, BOTTOM_NAV_H } from "./constants.jsx";
 
@@ -92,85 +93,68 @@ export default function App() {
           {modules.map(m => {
             const isActive = globalTab !== "settings" && tab === m.id;
             return (
-              <div key={m.id} style={{ position: 'relative' }}>
-                <button
-                  className={`lg-btn${isActive ? " active" : ""}`}
-                  onClick={() => setTab(m.id)}
-                  onMouseEnter={(e) => {
-                    const tooltip = e.currentTarget.nextElementSibling;
-                    if (tooltip) tooltip.style.opacity = '1';
-                  }}
-                  onMouseLeave={(e) => {
-                    const tooltip = e.currentTarget.nextElementSibling;
-                    if (tooltip) tooltip.style.opacity = '0';
-                  }}
-                >
-                  <NavIcon path={m.icon} />
-                </button>
-                <span style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  whiteSpace: 'nowrap',
-                  background: D.card,
-                  border: `1px solid ${D.border}`,
-                  borderRadius: 8,
-                  padding: '6px 12px',
-                  fontSize: 12,
-                  color: D.text,
-                  fontWeight: 500,
+              <button
+                key={m.id}
+                className={`lg-btn${isActive ? " active" : ""}`}
+                onClick={() => setTab(m.id)}
+                onMouseEnter={(e) => {
+                  const label = e.currentTarget.querySelector('.nav-label-text');
+                  if (label) {
+                    label.style.maxWidth = '200px';
+                    label.style.opacity = '1';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  const label = e.currentTarget.querySelector('.nav-label-text');
+                  if (label) {
+                    label.style.maxWidth = '0';
+                    label.style.opacity = '0';
+                  }
+                }}
+              >
+                <NavIcon path={m.icon} />
+                <span className="nav-label-text" style={{
+                  maxWidth: '0',
+                  overflow: 'hidden',
                   opacity: 0,
-                  pointerEvents: 'none',
-                  transition: 'opacity 0.3s ease',
-                  transitionDelay: '0.2s',
-                  zIndex: 1000,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                  transition: 'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
+                  display: 'inline-block'
                 }}>
                   {m.label}
                 </span>
-              </div>
+              </button>
             );
           })}
           <div className="lg-divider" />
-          <div style={{ position: 'relative' }}>
-            <button
-              className={`lg-btn${globalTab === "settings" ? " active" : ""}`}
-              onClick={() => setTab("settings")}
-              onMouseEnter={(e) => {
-                const tooltip = e.currentTarget.nextElementSibling;
-                if (tooltip) tooltip.style.opacity = '1';
-              }}
-              onMouseLeave={(e) => {
-                const tooltip = e.currentTarget.nextElementSibling;
-                if (tooltip) tooltip.style.opacity = '0';
-              }}
-            >
-              <NavIcon path={SETTINGS_MODULE.icon} />
-            </button>
-            <span style={{
-              position: 'absolute',
-              top: 'calc(100% + 8px)',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              whiteSpace: 'nowrap',
-              background: D.card,
-              border: `1px solid ${D.border}`,
-              borderRadius: 8,
-              padding: '6px 12px',
-              fontSize: 12,
-              color: D.text,
-              fontWeight: 500,
+          <button
+            className={`lg-btn${globalTab === "settings" ? " active" : ""}`}
+            onClick={() => setTab("settings")}
+            onMouseEnter={(e) => {
+              const label = e.currentTarget.querySelector('.settings-label');
+              if (label) {
+                label.style.maxWidth = '200px';
+                label.style.opacity = '1';
+              }
+            }}
+            onMouseLeave={(e) => {
+              const label = e.currentTarget.querySelector('.settings-label');
+              if (label) {
+                label.style.maxWidth = '0';
+                label.style.opacity = '0';
+              }
+            }}
+          >
+            <NavIcon path={SETTINGS_MODULE.icon} />
+            <span className="settings-label" style={{
+              maxWidth: '0',
+              overflow: 'hidden',
               opacity: 0,
-              pointerEvents: 'none',
-              transition: 'opacity 0.3s ease',
-              transitionDelay: '0.2s',
-              zIndex: 1000,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+              transition: 'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
+              display: 'inline-block'
             }}>
               {SETTINGS_MODULE.label}
             </span>
-          </div>
+          </button>
         </div>
       </div>
 
