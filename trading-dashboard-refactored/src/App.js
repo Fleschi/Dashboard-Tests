@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTradeData, useIsMobile, useDesign, useNavigation } from "./hooks";
 import { BACK_MODULES, FWD_MODULES, SETTINGS_MODULE, BOTTOM_NAV_H } from "./constants.jsx";
 
@@ -122,7 +123,8 @@ export default function App() {
                   fontWeight: 500,
                   opacity: 0,
                   pointerEvents: 'none',
-                  transition: 'opacity 0.15s',
+                  transition: 'opacity 0.3s ease',
+                  transitionDelay: '0.2s',
                   zIndex: 1000,
                   boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
                 }}>
@@ -162,7 +164,8 @@ export default function App() {
               fontWeight: 500,
               opacity: 0,
               pointerEvents: 'none',
-              transition: 'opacity 0.15s',
+              transition: 'opacity 0.3s ease',
+              transitionDelay: '0.2s',
               zIndex: 1000,
               boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
             }}>
