@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { C } from "../utils/ui";
-import { percentile, buildHistogram } from "../utils/calculations";
+import { percentile } from "../utils/calculations";
 
 function calcTradesPerWeek(trades) {
   const map = {};
@@ -13,6 +13,38 @@ function calcTradesPerWeek(trades) {
     map[`${d.getFullYear()}-${wk}`] = 1;
   }
   return Math.max(1, trades.length / Math.max(1, Object.keys(map).length));
+}
+
+// Neue $1k Histogram Funktion
+function buildHistogram1k(finals) {
+  if (!finals?.length) return [];
+
+  const min = Math.floor(Math.min(...finals) / 1000) * 1000;
+  const max = Math.ceil(Math.max(...finals) / 1000) * 1000;
+
+  const bins = {};
+  for (let k = min; k <= max; k += 1000) {
+    bins[k] = 0;
+  }
+
+  for (const val of finals) {
+    const bin = Math.floor(val / 1000) * 1000;
+    if (bin in bins) bins[bin]++;
+  }
+
+  return Object.entries(bins)
+    .map(([k, count]) => ({
+      range: formatBinLabel(Number(k)),
+      rangeValue: Number(k),
+      count
+    }))
+    .sort((a, b) => a.rangeValue - b.rangeValue);
+}
+
+function formatBinLabel(k) {
+  const label = Math.abs(k / 1000);
+  if (k >= 0) return `+${label}k`;
+  return `-${label}k`;
 }
 
 function runMC(trades, simCount, weeks) {
@@ -90,7 +122,7 @@ export default function MonteCarlo({ stats, design }) {
   const fmtMC = n => Number(n) >= 0 ? `+$${Math.abs(Number(n)).toFixed(0)}` : `-$${Math.abs(Number(n)).toFixed(0)}`;
   const mcFinals = mcResults?.map(r => r.finalPnl) || [];
   const mcDDs    = mcResults?.map(r => r.maxDD)    || [];
-  const hist     = mcResults ? buildHistogram(mcFinals) : [];
+  const hist     = mcResults ? buildHistogram1k(mcFinals) : [];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
