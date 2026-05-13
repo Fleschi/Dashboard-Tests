@@ -443,21 +443,6 @@ export default function PropFirm({ stats, design }) {
               );
             })}
           </div>
-
-          <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 24 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 16, color: D.text }}>Expected Net Profit</div>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={roiData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke={D.border} horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 11, fill: D.textMuted }} tickFormatter={v => `$${Math.round(v / 1000)}k`} />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: D.textMuted }} width={110} />
-                <Tooltip contentStyle={{ background: D.card, border: "none", borderRadius: 8, fontSize: 12 }} formatter={v => [`$${Math.round(v).toLocaleString()}`, ""]} />
-                <ReferenceLine x={0} stroke={D.border} />
-                <Bar dataKey="6 months"  fill={D.blue}  radius={[0, 4, 4, 0]} />
-                <Bar dataKey="12 months" fill={D.text}  radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
         </>
       )}
     </div>
