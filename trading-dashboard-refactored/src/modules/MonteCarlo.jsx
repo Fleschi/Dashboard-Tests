@@ -53,7 +53,15 @@ function runMC(trades, simCount, weeks) {
   const pnls = trades.map(t => t.pnl);
   const tradesPerWeek = calcTradesPerWeek(trades);
   const tradesTotal = Math.min(Math.round(weeks * tradesPerWeek), 1500);
-  const snapshotInterval = Math.max(1, Math.round(tradesPerWeek));
+
+  // Mindestens 20 Snapshots für gleichmäßige Verteilung, maximal alle 5 Trades ein Snapshot
+  const minSnapshots = 20;
+  const maxSnapshotInterval = Math.max(1, Math.floor(tradesTotal / minSnapshots));
+  const snapshotInterval = Math.min(
+    Math.max(1, Math.round(tradesPerWeek)),
+    maxSnapshotInterval
+  );
+
   const effectiveSimCount = Math.min(simCount, Math.floor(600000 / Math.max(tradesTotal, 1)));
   const results = [];
   for (let s = 0; s < effectiveSimCount; s++) {
