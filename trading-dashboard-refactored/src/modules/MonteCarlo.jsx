@@ -38,6 +38,7 @@ function buildHistogram1k(finals) {
       rangeValue: Number(k),
       count
     }))
+    .filter(bin => bin.count >= 10)
     .sort((a, b) => a.rangeValue - b.rangeValue);
 }
 
