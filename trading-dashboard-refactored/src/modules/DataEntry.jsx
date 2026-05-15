@@ -251,7 +251,7 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
       {trades.length>0 && (
         <div style={{ display:"flex", flexDirection:"column", background:D.card, border:`1px solid ${D.border}`, borderRadius:12, overflow:"hidden" }}>
           {/* Header */}
-          <div style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"14px 20px", borderBottom:`1px solid ${D.border}`, background:`${D.bg}80` }}>
+          <div style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"14px 20px", background:`${D.bg}80` }}>
             <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
             {[["date","Date"],["rr","RR"],["pnl","PnL"],["outcome","Status"]].map(([col,lbl])=>(
               <div key={col} onClick={()=>col!=="outcome"&&toggleSort(col)}
@@ -269,7 +269,7 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
             const isSelected = selected.has(t.id);
 
             if (isEditing) return (
-              <div key={t.id||i} style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"10px 20px", borderBottom:i<sorted.length-1?`1px solid ${D.border}`:"none", background:`${D.border}25`, gap:8 }}>
+              <div key={t.id||i} style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"10px 20px", background:`${D.border}25`, gap:8 }}>
                 <input type="checkbox" checked={isSelected} onChange={()=>toggleSelect(t.id)} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
                 <SegmentedDateInput parts={editForm} onChange={p=>setEditForm(f=>({...f,...p}))} D={D} />
                 <input type="number" step="0.1" value={editForm.rr} onChange={e=>setEditForm(f=>({...f,rr:e.target.value}))} style={{ ...numStyle(), padding:"6px 10px", fontSize:12 }} />
@@ -283,7 +283,7 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
             );
 
             return (
-              <div key={t.id||i} style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"16px 20px", borderBottom:i<sorted.length-1?`1px solid ${D.border}`:"none", background:isSelected?`${D.border}20`:"transparent", transition:"background 0.15s" }}>
+              <div key={t.id||i} style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"16px 20px", background:isSelected?`${D.border}20`:"transparent", transition:"background 0.15s" }}>
                 <div onClick={()=>toggleSelect(t.id)}>
                   <input type="checkbox" checked={isSelected} onChange={()=>toggleSelect(t.id)} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
                 </div>
