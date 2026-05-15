@@ -202,21 +202,22 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
     else setSelected(prev=>{ const n=new Set(prev); sorted.forEach(t=>n.add(t.id)); return n; });
   };
 
-  const COLS = "32px 1fr 0.8fr 1fr 0.8fr 80px";
+  // Pinterest-inspired spacing
+  const COLS = "40px 1.2fr 0.8fr 1fr 0.9fr 100px";
 
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
+    <div style={{ display:"flex", flexDirection:"column", gap:24 }}>
 
       {/* Form */}
-      <div style={{ background:D.card, border:`1px solid ${D.border}`, borderRadius:12, padding:20 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
-          <div style={{ fontSize:14, fontWeight:600, color:D.text }}>
+      <div style={{ background:D.card, border:`1px solid ${D.border}`, borderRadius:12, padding:24 }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+          <div style={{ fontSize:15, fontWeight:600, color:D.text }}>
             New Trade
-            <span style={{ fontSize:11, padding:"2px 8px", borderRadius:6, background:`${D.border}40`, color:D.textMuted, marginLeft:8 }}>
+            <span style={{ fontSize:11, padding:"3px 10px", borderRadius:6, background:`${D.border}40`, color:D.textMuted, marginLeft:10, fontWeight:500 }}>
               {mode==="backtesting"?"Backtesting":"Forward Testing"}
             </span>
           </div>
-          <button onClick={exportCSV} disabled={!trades.length} style={{ padding:"5px 12px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:7, color:D.textMuted, cursor:"pointer", fontSize:12 }}>Export CSV</button>
+          <button onClick={exportCSV} disabled={!trades.length} style={{ padding:"6px 14px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:8, color:D.textMuted, cursor:"pointer", fontSize:12, fontWeight:500 }}>Export CSV</button>
         </div>
         <div style={{ display:"flex", gap:12, alignItems:"flex-end", flexWrap:"wrap" }}>
           <div>
@@ -236,71 +237,73 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
             {saving?"Saving...":"Add"}
           </button>
         </div>
-        <div style={{ marginTop:12, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <span style={{ fontSize:11, color:D.textMuted }}>{trades.length} trades</span>
+        <div style={{ marginTop:16, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <span style={{ fontSize:11, color:D.textMuted, fontWeight:500 }}>{trades.length} trades total</span>
           {selected.size>0 && (
-            <button onClick={deleteSelected} style={{ padding:"4px 12px", background:`${D.red}18`, border:`1px solid ${D.red}40`, borderRadius:6, color:D.red, cursor:"pointer", fontSize:12, fontWeight:600 }}>
+            <button onClick={deleteSelected} style={{ padding:"5px 14px", background:`${D.red}18`, border:`1px solid ${D.red}40`, borderRadius:6, color:D.red, cursor:"pointer", fontSize:12, fontWeight:600 }}>
               Delete {selected.size}
             </button>
           )}
         </div>
       </div>
 
-      {/* Trade list */}
+      {/* Trade list - Pinterest style */}
       {trades.length>0 && (
         <div style={{ display:"flex", flexDirection:"column", background:D.card, border:`1px solid ${D.border}`, borderRadius:12, overflow:"hidden" }}>
-          <div style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"10px 16px", borderBottom:`1px solid ${D.border}`, background:D.bg }}>
-            <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor:"pointer", accentColor:D.text }} />
-            {[["date","Date"],["rr","RR"],["pnl","PnL"],["outcome","Outcome"]].map(([col,lbl])=>(
+          {/* Header */}
+          <div style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"14px 20px", borderBottom:`1px solid ${D.border}`, background:`${D.bg}80` }}>
+            <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
+            {[["date","Date"],["rr","RR"],["pnl","PnL"],["outcome","Status"]].map(([col,lbl])=>(
               <div key={col} onClick={()=>col!=="outcome"&&toggleSort(col)}
-                style={{ fontSize:10, fontWeight:600, color:sortCol===col?D.text:D.textMuted, textTransform:"uppercase", letterSpacing:"0.08em", cursor:col!=="outcome"?"pointer":"default", userSelect:"none" }}>
-                {lbl} {sortCol===col?(sortDir==="asc"?"↑":"↓"):""}
+                style={{ fontSize:11, fontWeight:600, color:sortCol===col?D.text:D.textMuted, textTransform:"uppercase", letterSpacing:"0.06em", cursor:col!=="outcome"?"pointer":"default", userSelect:"none" }}>
+                {lbl} {sortCol===col?(sortDir==="asc"?" ↑":" ↓"):""}
               </div>
             ))}
-            <div />
+            <div style={{ fontSize:11, fontWeight:600, color:D.textMuted, textTransform:"uppercase", letterSpacing:"0.06em" }}>Actions</div>
           </div>
 
+          {/* Rows */}
           {sorted.map((t,i) => {
             const isEditing = editId===t.id;
             const color = outcomeColor(t.pnl);
             const isSelected = selected.has(t.id);
 
             if (isEditing) return (
-              <div key={t.id||i} style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"6px 16px", borderBottom:`1px solid ${D.border}`, background:`${D.border}20`, gap:6 }}>
-                <input type="checkbox" checked={isSelected} onChange={()=>toggleSelect(t.id)} style={{ cursor:"pointer", accentColor:D.text }} />
+              <div key={t.id||i} style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"10px 20px", borderBottom:i<sorted.length-1?`1px solid ${D.border}`:"none", background:`${D.border}25`, gap:8 }}>
+                <input type="checkbox" checked={isSelected} onChange={()=>toggleSelect(t.id)} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
                 <SegmentedDateInput parts={editForm} onChange={p=>setEditForm(f=>({...f,...p}))} D={D} />
-                <input type="number" step="0.1" value={editForm.rr} onChange={e=>setEditForm(f=>({...f,rr:e.target.value}))} style={{ ...numStyle(), padding:"5px 8px", fontSize:12 }} />
-                <input type="number" value={editForm.pnl} onChange={e=>setEditForm(f=>({...f,pnl:e.target.value}))} style={{ ...numStyle(), padding:"5px 8px", fontSize:12 }} />
-                <div style={{ fontSize:12, fontWeight:700, color:outcomeColor(parseFloat(editForm.pnl)) }}>{outcomeLabel(parseFloat(editForm.pnl))}</div>
-                <div style={{ display:"flex", gap:4 }}>
-                  <button onClick={saveEdit} style={{ padding:"3px 8px", background:D.text, color:D.bg, border:"none", borderRadius:5, cursor:"pointer", fontSize:11, fontWeight:700 }}>Save</button>
-                  <button onClick={()=>setEditId(null)} style={{ padding:"3px 8px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:5, cursor:"pointer", fontSize:11, color:D.textMuted }}>✕</button>
+                <input type="number" step="0.1" value={editForm.rr} onChange={e=>setEditForm(f=>({...f,rr:e.target.value}))} style={{ ...numStyle(), padding:"6px 10px", fontSize:12 }} />
+                <input type="number" value={editForm.pnl} onChange={e=>setEditForm(f=>({...f,pnl:e.target.value}))} style={{ ...numStyle(), padding:"6px 10px", fontSize:12 }} />
+                <div style={{ fontSize:11, fontWeight:700, color:outcomeColor(parseFloat(editForm.pnl)), textTransform:"uppercase", letterSpacing:"0.05em" }}>{outcomeLabel(parseFloat(editForm.pnl))}</div>
+                <div style={{ display:"flex", gap:6 }}>
+                  <button onClick={saveEdit} style={{ padding:"4px 10px", background:D.text, color:D.bg, border:"none", borderRadius:6, cursor:"pointer", fontSize:11, fontWeight:700 }}>Save</button>
+                  <button onClick={()=>setEditId(null)} style={{ padding:"4px 10px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:6, cursor:"pointer", fontSize:11, color:D.textMuted }}>✕</button>
                 </div>
               </div>
             );
 
             return (
-              <div key={t.id||i} style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"0 16px", borderBottom:i<sorted.length-1?`1px solid ${D.border}`:"none", background:isSelected?`${D.border}30`:"transparent" }}>
-                <div style={{ padding:"12px 0" }} onClick={()=>toggleSelect(t.id)}>
-                  <input type="checkbox" checked={isSelected} onChange={()=>toggleSelect(t.id)} style={{ cursor:"pointer", accentColor:D.text }} />
+              <div key={t.id||i} style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"16px 20px", borderBottom:i<sorted.length-1?`1px solid ${D.border}`:"none", background:isSelected?`${D.border}20`:"transparent", transition:"background 0.15s" }}>
+                <div onClick={()=>toggleSelect(t.id)}>
+                  <input type="checkbox" checked={isSelected} onChange={()=>toggleSelect(t.id)} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
                 </div>
-                <div style={{ padding:"12px 0", fontFamily:"monospace", fontSize:12, color:D.textMuted, whiteSpace:"nowrap" }}>
+                <div style={{ fontFamily:"monospace", fontSize:12, color:D.text, fontWeight:500 }}>
                   {t.date?new Date(t.date).toLocaleString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}):"—"}
                 </div>
-                <div style={{ padding:"12px 0", fontFamily:"monospace", fontSize:13, color:D.textMuted }}>
+                <div style={{ fontFamily:"monospace", fontSize:13, color:D.textMuted, fontWeight:500 }}>
                   {t.rr>0?`${parseFloat(t.rr).toFixed(1)}R`:"—"}
                 </div>
-                <div style={{ padding:"12px 0", fontFamily:"monospace", fontSize:13, fontWeight:700, color }}>
+                <div style={{ fontFamily:"monospace", fontSize:13, fontWeight:700, color }}>
                   {t.pnl>=0?`+$${t.pnl.toLocaleString()}`:`-$${Math.abs(t.pnl).toLocaleString()}`}
                 </div>
-                <div style={{ padding:"12px 0" }}>
-                  <span style={{ padding:"3px 10px", borderRadius:20, fontSize:10, fontWeight:700, letterSpacing:"0.06em", background:`${color}15`, color, border:`1px solid ${color}30` }}>
+                <div>
+                  <span style={{ display:"inline-block", padding:"4px 12px", borderRadius:20, fontSize:10, fontWeight:700, letterSpacing:"0.05em", background:`${color}15`, color, border:`1px solid ${color}30` }}>
                     {outcomeLabel(t.pnl)}
                   </span>
                 </div>
-                <div style={{ padding:"12px 0", display:"flex", gap:6, justifyContent:"flex-end" }}>
-                  <button onClick={()=>startEdit(t)} style={{ background:"transparent", border:"none", color:D.textMuted, cursor:"pointer", fontSize:11, padding:"2px 4px" }}>Edit</button>
-                  <button onClick={()=>remove(t.id)} style={{ background:"transparent", border:"none", color:D.textMuted, cursor:"pointer", fontSize:16, lineHeight:1 }}>×</button>
+                <div style={{ display:"flex", gap:8, justifyContent:"flex-end" }}>
+                  <button onClick={()=>startEdit(t)} style={{ background:"transparent", border:"none", color:D.textMuted, cursor:"pointer", fontSize:12, padding:"4px 8px", fontWeight:500 }}>Edit</button>
+                  <button onClick={()=>remove(t.id)} style={{ background:"transparent", border:"none", color:D.textMuted, cursor:"pointer", fontSize:18, lineHeight:1, padding:"0 4px" }}>×</button>
                 </div>
               </div>
             );
