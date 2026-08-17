@@ -5,7 +5,6 @@ import { GlobalStyles }  from "./components/GlobalStyles";
 import NavIcon           from "./components/NavIcon";
 import ModuleContent     from "./components/ModuleContent";
 import Settings          from "./modules/Settings";
-import PageBackground    from "./components/PageBackground";
 
 const FONT  = "'DM Sans', system-ui, sans-serif";
 const NAV_H = 56;
@@ -26,7 +25,7 @@ export default function App() {
   );
 
   const content = loading ? (
-    <div style={{ textAlign: "center", padding: 80, color: D.textMuted, fontSize: 13, letterSpacing: "0.1em", textTransform: "uppercase" }}>Loading...</div>
+    <div style={{ textAlign: "center", padding: 80, color: D.textMuted, fontSize: 13, letterSpacing: "0.06em", textTransform: "uppercase" }}>Loading...</div>
   ) : (
     <>
       {globalTab === "settings" && <Settings design={D} onChange={setDesign} />}
@@ -44,22 +43,21 @@ export default function App() {
   if (isMobile) {
     const mobileTabs = [SETTINGS_MODULE, ...MODULES];
     return (
-      <div style={{ height: "100vh", color: D.text, fontFamily: FONT, display: "flex", flexDirection: "column", position: "relative", zIndex: 1, overflow: "hidden", background: D.bg }}>
+      <div style={{ height: "100vh", color: D.text, fontFamily: FONT, display: "flex", flexDirection: "column", background: D.bg, overflow: "hidden" }}>
         <GlobalStyles design={D} />
-        <PageBackground design={D} />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", flexShrink: 0, borderBottom: `1px solid ${D.border}`, background: `${D.card}ee`, backdropFilter: "blur(12px)" }}>
+        <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", flexShrink: 0, borderBottom: `1px solid ${D.border}` }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: D.text }}>
             {globalTab === "settings" ? "Settings" : (MODULES.find(m => m.id === tab)?.label || "")}
           </div>
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: 16, paddingBottom: BOTTOM_NAV_H + 16 }}>{content}</div>
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: BOTTOM_NAV_H, background: `${D.card}f5`, backdropFilter: "blur(16px)", borderTop: `1px solid ${D.border}`, display: "flex", alignItems: "center", justifyContent: "space-around", zIndex: 20 }}>
+        <div style={{ height: BOTTOM_NAV_H, flexShrink: 0, background: D.bg, borderTop: `1px solid ${D.border}`, display: "flex", alignItems: "center", justifyContent: "space-around" }}>
           {mobileTabs.map(m => {
             const isActive = globalTab === "settings" ? m.id === "settings" : tab === m.id;
             return (
-              <button key={m.id} onClick={() => setTab(m.id)} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 0", background: "none", border: "none", cursor: "pointer", color: isActive ? D.blue : D.textMuted }}>
+              <button key={m.id} onClick={() => setTab(m.id)} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 0", background: "none", border: "none", cursor: "pointer", color: isActive ? D.text : D.textMuted }}>
                 <NavIcon path={m.icon} />
-                <span style={{ fontSize: 9, fontWeight: isActive ? 700 : 400, letterSpacing: "0.04em" }}>{m.label}</span>
+                <span style={{ fontSize: 9, fontWeight: isActive ? 700 : 400, letterSpacing: "0.02em" }}>{m.label}</span>
               </button>
             );
           })}
@@ -70,58 +68,30 @@ export default function App() {
 
   // ── Desktop ───────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: "100vh", color: D.text, fontFamily: FONT, position: "relative", zIndex: 1, overflow: "hidden", background: D.bg }}>
+    <div style={{ height: "100vh", color: D.text, fontFamily: FONT, background: D.bg, overflow: "hidden" }}>
       <GlobalStyles design={D} />
-      <PageBackground design={D} />
 
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: NAV_H, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px", pointerEvents: "none" }}>
-        <div className="lg-shell" style={{ pointerEvents: "all" }}>
+      <div style={{ height: NAV_H, borderBottom: `1px solid ${D.border}`, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
           {MODULES.map(m => {
             const isActive = globalTab !== "settings" && tab === m.id;
             return (
-              <button
-                key={m.id}
-                className={`lg-btn${isActive ? " active" : ""}`}
-                onClick={() => setTab(m.id)}
-                onMouseEnter={(e) => {
-                  const label = e.currentTarget.querySelector('.nav-label-text');
-                  if (label) { label.style.maxWidth = '200px'; label.style.opacity = '1'; }
-                }}
-                onMouseLeave={(e) => {
-                  const label = e.currentTarget.querySelector('.nav-label-text');
-                  if (label) { label.style.maxWidth = '0'; label.style.opacity = '0'; }
-                }}
-              >
+              <button key={m.id} className={`nav-btn${isActive ? " active" : ""}`} onClick={() => setTab(m.id)}>
                 <NavIcon path={m.icon} />
-                <span className="nav-label-text" style={{ maxWidth: '0', overflow: 'hidden', opacity: 0, transition: 'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease', display: 'inline-block' }}>
-                  {m.label}
-                </span>
+                <span>{m.label}</span>
               </button>
             );
           })}
-          <div className="lg-divider" />
-          <button
-            className={`lg-btn${globalTab === "settings" ? " active" : ""}`}
-            onClick={() => setTab("settings")}
-            onMouseEnter={(e) => {
-              const label = e.currentTarget.querySelector('.settings-label');
-              if (label) { label.style.maxWidth = '200px'; label.style.opacity = '1'; }
-            }}
-            onMouseLeave={(e) => {
-              const label = e.currentTarget.querySelector('.settings-label');
-              if (label) { label.style.maxWidth = '0'; label.style.opacity = '0'; }
-            }}
-          >
+          <div style={{ width: 1, height: 18, background: D.border, margin: "0 6px" }} />
+          <button className={`nav-btn${globalTab === "settings" ? " active" : ""}`} onClick={() => setTab("settings")}>
             <NavIcon path={SETTINGS_MODULE.icon} />
-            <span className="settings-label" style={{ maxWidth: '0', overflow: 'hidden', opacity: 0, transition: 'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease', display: 'inline-block' }}>
-              {SETTINGS_MODULE.label}
-            </span>
+            <span>{SETTINGS_MODULE.label}</span>
           </button>
         </div>
       </div>
 
-      <div style={{ height: "100%", overflowY: "auto", position: "relative", zIndex: 1 }}>
-        <div style={{ paddingTop: NAV_H + 16, paddingBottom: 32, paddingLeft: "max(24px, 10vw)", paddingRight: "max(24px, 10vw)" }}>
+      <div style={{ height: `calc(100% - ${NAV_H}px)`, overflowY: "auto" }}>
+        <div style={{ padding: "24px max(24px, 10vw) 32px" }}>
           {content}
         </div>
       </div>

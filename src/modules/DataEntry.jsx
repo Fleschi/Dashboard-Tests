@@ -274,7 +274,7 @@ export default function DataEntry({ trades, onTradesChange, design }) {
                   {t.pnl>=0?`+$${t.pnl.toLocaleString()}`:`-$${Math.abs(t.pnl).toLocaleString()}`}
                 </div>
                 <div>
-                  <span style={{ display:"inline-block", padding:"4px 12px", borderRadius:20, fontSize:10, fontWeight:700, letterSpacing:"0.05em", background:`${color}15`, color, border:`1px solid ${color}30` }}>
+                  <span style={{ fontSize:11, fontWeight:700, letterSpacing:"0.04em", color }}>
                     {outcomeLabel(t.pnl)}
                   </span>
                 </div>

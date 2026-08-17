@@ -1,7 +1,7 @@
 export function GlobalStyles({ design: D }) {
   return (
     <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
       * { box-sizing: border-box; }
       body {
@@ -9,13 +9,12 @@ export function GlobalStyles({ design: D }) {
         margin: 0;
         padding: 0;
         -webkit-font-smoothing: antialiased;
-        text-rendering: optimizeLegibility;
       }
 
       button, input, select, textarea { font-family: inherit; }
 
       :focus-visible {
-        outline: 2px solid ${D.blue}80;
+        outline: 2px solid ${D.text}80;
         outline-offset: 2px;
       }
 
@@ -26,61 +25,31 @@ export function GlobalStyles({ design: D }) {
         }
       }
 
-      /* ── Top nav pill ───────────────────────────────────────────────── */
+      /* ── Top nav ────────────────────────────────────────────────────── */
 
-      .lg-shell {
-        position: relative;
+      .nav-btn {
         display: flex;
         align-items: center;
-        gap: 2px;
-        padding: 5px;
-        border-radius: 999px;
-        background: ${D.card}c0;
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        border: 1px solid ${D.border};
-        box-shadow: 0 8px 24px ${D.bg}50;
-      }
-
-      /* ── Individual pill buttons ────────────────────────────────────── */
-
-      .lg-btn {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        height: 32px;
-        padding: 0 10px;
-        border-radius: 999px;
+        gap: 8px;
+        height: 34px;
+        padding: 0 12px;
+        border-radius: 8px;
         border: none;
         background: transparent;
         cursor: pointer;
         color: ${D.textMuted};
-        font-size: 12px;
-        font-weight: 400;
+        font-size: 13px;
+        font-weight: 500;
         white-space: nowrap;
-        flex-shrink: 0;
-        transition: color 0.18s ease, background 0.18s ease, padding 0.22s cubic-bezier(0.4,0,0.2,1);
+        transition: color 0.15s ease, background 0.15s ease;
       }
 
-      .lg-btn:hover {
+      .nav-btn:hover { color: ${D.text}; background: ${D.text}0d; }
+
+      .nav-btn.active {
         color: ${D.text};
-        background: ${D.text}0d;
-      }
-
-      .lg-btn.active {
-        color: ${D.bg};
+        background: ${D.text}14;
         font-weight: 600;
-        background: ${D.blue};
-      }
-
-      /* ── Divider ────────────────────────────────────────────────────── */
-
-      .lg-divider {
-        width: 1px;
-        height: 16px;
-        background: ${D.border};
-        margin: 0 4px;
       }
 
       /* ── Scrollbar ──────────────────────────────────────────────────── */

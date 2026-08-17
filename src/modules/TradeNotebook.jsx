@@ -105,9 +105,9 @@ function AttachButton({ label, file, existingUrl, onFile, onClear, D, uploading 
         <button type="button" onClick={() => ref.current.click()} style={{
           padding: "7px 16px", borderRadius: 8, border: `1px solid ${D.border}`,
           background: "transparent", color: D.textMuted, fontSize: 12, cursor: "pointer",
-          display: "flex", alignItems: "center", gap: 6, width: "fit-content",
+          width: "fit-content",
         }}>
-          <span style={{ fontSize: 14 }}>📎</span> {label}
+          {label}
         </button>
       ) : (
         <div style={{ position: "relative", display: "inline-block" }}>
@@ -144,7 +144,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <span style={{ fontSize: 14, color: D.text, fontFamily: "monospace", fontWeight: 600 }}>{entry.time_entered}</span>
           {bias && (
-            <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 8, background: `${biasColor}18`, color: biasColor, border: `1px solid ${biasColor}30` }}>{bias}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: biasColor }}>{bias}</span>
           )}
         </div>
         <div style={{ display: "flex", gap: 8 }}>
