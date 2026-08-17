@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
-import { saveTrade, saveForwardTrade, deleteTrade, updateTrade, updateForwardTrade, deleteForwardTrade } from "../utils/supabase";
-import { C } from "../utils/ui";
+import { saveTrade, deleteTrade, updateTrade } from "../utils/supabase";
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
@@ -107,10 +106,10 @@ function SegmentedDateInput({ parts, onChange, D }) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export default function DataEntry({ trades, onTradesChange, design, mode = "backtesting" }) {
-  const D = design || C;
-  const [form, setForm]     = useState({ ...EMPTY_PARTS(), rr:"", pnl:"" });
-  const [saving, setSaving] = useState(false);
+export default function DataEntry({ trades, onTradesChange, design }) {
+  const D = design;
+  const [form, setForm]       = useState({ ...EMPTY_PARTS(), rr:"", pnl:"" });
+  const [saving, setSaving]   = useState(false);
   const [sortCol, setSortCol] = useState("date");
   const [sortDir, setSortDir] = useState("desc");
   const [selected, setSelected] = useState(new Set());
@@ -129,12 +128,7 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
     setSaving(true);
     try {
       const pnl = parseFloat(form.pnl)||0, rr = parseFloat(form.rr)||0;
-      let saved;
-      if (mode === "forward") {
-        saved = await saveForwardTrade({ date:isoDate, time_entered:"", pnl, rr, risk:250, direction:"", continuation:"", sl_management:"", tp_management:"", location:"", notes:"", learnings:"", fees:0, screenshot_url:null });
-      } else {
-        saved = await saveTrade({ date:isoDate, pnl, rr, mode });
-      }
+      const saved = await saveTrade({ date:isoDate, pnl, rr, mode:"backtesting" });
       onTradesChange(prev => [...prev, { date:isoDate, pnl, rr, id:saved.id }].sort((a,b) => new Date(a.date)-new Date(b.date)));
       setForm({ ...EMPTY_PARTS(), rr:"", pnl:"" });
     } catch(e) { console.error(e); }
@@ -143,11 +137,7 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
 
   const remove = async (id) => {
     try {
-      if (mode === "forward") {
-        await deleteForwardTrade(id);
-      } else {
-        await deleteTrade(id);
-      }
+      await deleteTrade(id);
       onTradesChange(prev => prev.filter(t => t.id !== id));
       setSelected(prev => { const n = new Set(prev); n.delete(id); return n; });
     } catch(e) { console.error(e); }
@@ -156,8 +146,7 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
   const deleteSelected = async () => {
     if (!selected.size) return;
     try {
-      const deleteFn = mode === "forward" ? deleteForwardTrade : deleteTrade;
-      await Promise.all([...selected].map(id => deleteFn(id)));
+      await Promise.all([...selected].map(id => deleteTrade(id)));
       onTradesChange(prev => prev.filter(t => !selected.has(t.id)));
       setSelected(new Set());
     } catch(e) { console.error(e); }
@@ -172,11 +161,7 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
     try {
       const isoDate = convertDate(editForm);
       const pnl = parseFloat(editForm.pnl)||0, rr = parseFloat(editForm.rr)||0;
-      if (mode === "forward") {
-        await updateForwardTrade(editId, { date:isoDate, pnl, rr });
-      } else {
-        await updateTrade(editId, { date:isoDate, pnl, rr });
-      }
+      await updateTrade(editId, { date:isoDate, pnl, rr });
       onTradesChange(prev => prev.map(t => t.id === editId ? { ...t, date:isoDate, pnl, rr } : t));
       setEditId(null);
     } catch(e) { console.error(e); }
@@ -202,21 +187,15 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
     else setSelected(prev=>{ const n=new Set(prev); sorted.forEach(t=>n.add(t.id)); return n; });
   };
 
-  // Pinterest-inspired spacing
   const COLS = "40px 1.2fr 0.8fr 1fr 0.9fr 100px";
 
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:24 }}>
 
       {/* Form */}
-      <div style={{ background:D.card, border:`1px solid ${D.border}`, borderRadius:12, padding:24 }}>
+      <div style={{ background:D.card, border:`1px solid ${D.border}`, borderRadius:16, padding:24 }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-          <div style={{ fontSize:15, fontWeight:600, color:D.text }}>
-            New Trade
-            <span style={{ fontSize:11, padding:"3px 10px", borderRadius:6, background:`${D.border}40`, color:D.textMuted, marginLeft:10, fontWeight:500 }}>
-              {mode==="backtesting"?"Backtesting":"Forward Testing"}
-            </span>
-          </div>
+          <div style={{ fontSize:15, fontWeight:600, color:D.text }}>New Trade</div>
           <button onClick={exportCSV} disabled={!trades.length} style={{ padding:"6px 14px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:8, color:D.textMuted, cursor:"pointer", fontSize:12, fontWeight:500 }}>Export CSV</button>
         </div>
         <div style={{ display:"flex", gap:12, alignItems:"flex-end", flexWrap:"wrap" }}>
@@ -247,10 +226,9 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
         </div>
       </div>
 
-      {/* Trade list - Pinterest style */}
+      {/* Trade list */}
       {trades.length>0 && (
-        <div style={{ display:"flex", flexDirection:"column", background:D.card, border:`1px solid ${D.border}`, borderRadius:12, overflow:"hidden" }}>
-          {/* Header */}
+        <div style={{ display:"flex", flexDirection:"column", background:D.card, border:`1px solid ${D.border}`, borderRadius:16, overflow:"hidden" }}>
           <div style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"14px 20px", background:`${D.bg}80` }}>
             <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
             {[["date","Date"],["rr","RR"],["pnl","PnL"],["outcome","Status"]].map(([col,lbl])=>(
@@ -262,7 +240,6 @@ export default function DataEntry({ trades, onTradesChange, design, mode = "back
             <div style={{ fontSize:11, fontWeight:600, color:D.textMuted, textTransform:"uppercase", letterSpacing:"0.06em" }}>Actions</div>
           </div>
 
-          {/* Rows */}
           {sorted.map((t,i) => {
             const isEditing = editId===t.id;
             const color = outcomeColor(t.pnl);

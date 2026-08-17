@@ -1,25 +1,23 @@
 import { useTradeData, useIsMobile, useDesign, useNavigation } from "./hooks";
-import { BACK_MODULES, FWD_MODULES, SETTINGS_MODULE, BOTTOM_NAV_H } from "./constants.jsx";
+import { MODULES, SETTINGS_MODULE, BOTTOM_NAV_H } from "./constants.jsx";
 
-import { GlobalStyles } from "./components/GlobalStyles";
-import NavIcon          from "./components/NavIcon";
-import ModuleContent    from "./components/ModuleContent";
-import Settings         from "./modules/Settings";
-import PageBackground   from "./components/PageBackground";
+import { GlobalStyles }  from "./components/GlobalStyles";
+import NavIcon           from "./components/NavIcon";
+import ModuleContent     from "./components/ModuleContent";
+import Settings          from "./modules/Settings";
+import PageBackground    from "./components/PageBackground";
 
 const FONT  = "'DM Sans', system-ui, sans-serif";
 const NAV_H = 56;
 
 export default function App() {
-  const { backTrades, setBackTrades, fwdTrades, setFwdTrades, backStats, loading, error } = useTradeData();
+  const { trades, setTrades, stats, loading, error } = useTradeData();
   const [design, setDesign] = useDesign();
   const isMobile = useIsMobile();
-  const { mode, isForward, tab, setTab, switchMode, globalTab } = useNavigation();
+  const { tab, setTab, globalTab } = useNavigation();
 
-  const D         = design;
-  const modules   = isForward ? FWD_MODULES : BACK_MODULES;
-  const modeColor = isForward ? D.green : D.blue;
-  const goToData  = () => setTab(isForward ? "fwd-data" : "data");
+  const D      = design;
+  const goToData = () => setTab("data");
 
   if (error) return (
     <div style={{ minHeight: "100vh", background: D.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -33,29 +31,25 @@ export default function App() {
     <>
       {globalTab === "settings" && <Settings design={D} onChange={setDesign} />}
       {globalTab !== "settings" && (
-        <ModuleContent tab={tab} globalTab={globalTab} isForward={isForward}
-          backTrades={backTrades} setBackTrades={setBackTrades}
-          fwdTrades={fwdTrades} setFwdTrades={setFwdTrades}
-          backStats={backStats} design={D} onGoToData={goToData} />
+        <ModuleContent
+          tab={tab} globalTab={globalTab}
+          trades={trades} setTrades={setTrades} stats={stats}
+          design={D} onGoToData={goToData}
+        />
       )}
     </>
   );
 
   // ── Mobile ────────────────────────────────────────────────────────────────
   if (isMobile) {
-    const mobileTabs = [SETTINGS_MODULE, ...modules];
+    const mobileTabs = [SETTINGS_MODULE, ...MODULES];
     return (
       <div style={{ height: "100vh", color: D.text, fontFamily: FONT, display: "flex", flexDirection: "column", position: "relative", zIndex: 1, overflow: "hidden", background: D.bg }}>
         <GlobalStyles design={D} />
         <PageBackground design={D} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", flexShrink: 0, borderBottom: `1px solid ${D.border}`, background: `${D.card}ee`, backdropFilter: "blur(12px)" }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: D.text }}>
-            {globalTab === "settings" ? "Settings" : (modules.find(m => m.id === tab)?.label || "")}
-          </div>
-          <div className="lg-mode">
-            {[["backtesting", "Back"], ["forward", "Live"]].map(([m, label]) => (
-              <button key={m} className={`lg-mode-btn${mode === m ? " active" : ""}`} onClick={() => switchMode(m)}>{label}</button>
-            ))}
+            {globalTab === "settings" ? "Settings" : (MODULES.find(m => m.id === tab)?.label || "")}
           </div>
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: 16, paddingBottom: BOTTOM_NAV_H + 16 }}>{content}</div>
@@ -63,7 +57,7 @@ export default function App() {
           {mobileTabs.map(m => {
             const isActive = globalTab === "settings" ? m.id === "settings" : tab === m.id;
             return (
-              <button key={m.id} onClick={() => setTab(m.id)} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 0", background: "none", border: "none", cursor: "pointer", color: isActive ? modeColor : D.textMuted }}>
+              <button key={m.id} onClick={() => setTab(m.id)} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 0", background: "none", border: "none", cursor: "pointer", color: isActive ? D.blue : D.textMuted }}>
                 <NavIcon path={m.icon} />
                 <span style={{ fontSize: 9, fontWeight: isActive ? 700 : 400, letterSpacing: "0.04em" }}>{m.label}</span>
               </button>
@@ -80,16 +74,9 @@ export default function App() {
       <GlobalStyles design={D} />
       <PageBackground design={D} />
 
-      {/* Floating nav */}
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: NAV_H, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px", pointerEvents: "none" }}>
         <div className="lg-shell" style={{ pointerEvents: "all" }}>
-          <div className="lg-mode">
-            {[["backtesting", "Back"], ["forward", "Live"]].map(([m, label]) => (
-              <button key={m} className={`lg-mode-btn${mode === m ? " active" : ""}`} onClick={() => switchMode(m)}>{label}</button>
-            ))}
-          </div>
-          <div className="lg-divider" />
-          {modules.map(m => {
+          {MODULES.map(m => {
             const isActive = globalTab !== "settings" && tab === m.id;
             return (
               <button
@@ -98,27 +85,15 @@ export default function App() {
                 onClick={() => setTab(m.id)}
                 onMouseEnter={(e) => {
                   const label = e.currentTarget.querySelector('.nav-label-text');
-                  if (label) {
-                    label.style.maxWidth = '200px';
-                    label.style.opacity = '1';
-                  }
+                  if (label) { label.style.maxWidth = '200px'; label.style.opacity = '1'; }
                 }}
                 onMouseLeave={(e) => {
                   const label = e.currentTarget.querySelector('.nav-label-text');
-                  if (label) {
-                    label.style.maxWidth = '0';
-                    label.style.opacity = '0';
-                  }
+                  if (label) { label.style.maxWidth = '0'; label.style.opacity = '0'; }
                 }}
               >
                 <NavIcon path={m.icon} />
-                <span className="nav-label-text" style={{
-                  maxWidth: '0',
-                  overflow: 'hidden',
-                  opacity: 0,
-                  transition: 'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
-                  display: 'inline-block'
-                }}>
+                <span className="nav-label-text" style={{ maxWidth: '0', overflow: 'hidden', opacity: 0, transition: 'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease', display: 'inline-block' }}>
                   {m.label}
                 </span>
               </button>
@@ -130,34 +105,21 @@ export default function App() {
             onClick={() => setTab("settings")}
             onMouseEnter={(e) => {
               const label = e.currentTarget.querySelector('.settings-label');
-              if (label) {
-                label.style.maxWidth = '200px';
-                label.style.opacity = '1';
-              }
+              if (label) { label.style.maxWidth = '200px'; label.style.opacity = '1'; }
             }}
             onMouseLeave={(e) => {
               const label = e.currentTarget.querySelector('.settings-label');
-              if (label) {
-                label.style.maxWidth = '0';
-                label.style.opacity = '0';
-              }
+              if (label) { label.style.maxWidth = '0'; label.style.opacity = '0'; }
             }}
           >
             <NavIcon path={SETTINGS_MODULE.icon} />
-            <span className="settings-label" style={{
-              maxWidth: '0',
-              overflow: 'hidden',
-              opacity: 0,
-              transition: 'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
-              display: 'inline-block'
-            }}>
+            <span className="settings-label" style={{ maxWidth: '0', overflow: 'hidden', opacity: 0, transition: 'max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease', display: 'inline-block' }}>
               {SETTINGS_MODULE.label}
             </span>
           </button>
         </div>
       </div>
 
-      {/* Content — full viewport width, padding scales with vw */}
       <div style={{ height: "100%", overflowY: "auto", position: "relative", zIndex: 1 }}>
         <div style={{ paddingTop: NAV_H + 16, paddingBottom: 32, paddingLeft: "max(24px, 10vw)", paddingRight: "max(24px, 10vw)" }}>
           {content}
