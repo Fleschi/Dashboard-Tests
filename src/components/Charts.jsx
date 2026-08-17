@@ -117,7 +117,7 @@ function YearModal({ trades, initialYear, initialMonth, onSelectMonth, onClose, 
         style={{
           background: D.card, border: `1px solid ${D.border}`,
           borderRadius: 16, padding: 28, width: 580, maxWidth: "calc(100vw - 48px)",
-          boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.5)",
         }}
       >
         {/* Header */}

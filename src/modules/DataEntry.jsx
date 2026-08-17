@@ -193,7 +193,7 @@ export default function DataEntry({ trades, onTradesChange, design }) {
     <div style={{ display:"flex", flexDirection:"column", gap:24 }}>
 
       {/* Form */}
-      <div style={{ background:D.card, border:`1px solid ${D.border}`, borderRadius:16, padding:24 }}>
+      <div style={{ background:D.card, border:`1px solid ${D.border}`, borderRadius:12, padding:24 }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
           <div style={{ fontSize:15, fontWeight:600, color:D.text }}>New Trade</div>
           <button onClick={exportCSV} disabled={!trades.length} style={{ padding:"6px 14px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:8, color:D.textMuted, cursor:"pointer", fontSize:12, fontWeight:500 }}>Export CSV</button>
@@ -228,7 +228,7 @@ export default function DataEntry({ trades, onTradesChange, design }) {
 
       {/* Trade list */}
       {trades.length>0 && (
-        <div style={{ display:"flex", flexDirection:"column", background:D.card, border:`1px solid ${D.border}`, borderRadius:16, overflow:"hidden" }}>
+        <div style={{ display:"flex", flexDirection:"column", background:D.card, border:`1px solid ${D.border}`, borderRadius:12, overflow:"hidden" }}>
           <div style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"14px 20px", background:`${D.bg}80` }}>
             <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
             {[["date","Date"],["rr","RR"],["pnl","PnL"],["outcome","Status"]].map(([col,lbl])=>(
@@ -274,7 +274,7 @@ export default function DataEntry({ trades, onTradesChange, design }) {
                   {t.pnl>=0?`+$${t.pnl.toLocaleString()}`:`-$${Math.abs(t.pnl).toLocaleString()}`}
                 </div>
                 <div>
-                  <span style={{ fontSize:11, fontWeight:700, letterSpacing:"0.04em", color }}>
+                  <span style={{ display:"inline-block", padding:"4px 12px", borderRadius:20, fontSize:10, fontWeight:700, letterSpacing:"0.05em", background:`${color}15`, color, border:`1px solid ${color}30` }}>
                     {outcomeLabel(t.pnl)}
                   </span>
                 </div>

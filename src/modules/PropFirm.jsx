@@ -341,13 +341,13 @@ export default function PropFirm({ stats, design }) {
       </div>
 
       {rawTrades.length === 0 && (
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 24, textAlign: "center", color: D.textMuted, fontSize: 13 }}>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 24, textAlign: "center", color: D.textMuted, fontSize: 13 }}>
           Add trades in the Data tab first to run simulations.
         </div>
       )}
 
       {/* Firm table — single grid so ALL dividers align perfectly */}
-      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, overflow: "hidden" }}>
+      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, overflow: "hidden" }}>
 
         {/* Header row */}
         <div style={{ display: "grid", gridTemplateColumns: "180px 1px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 80px", alignItems: "center", padding: "10px 20px", borderBottom: `1px solid ${D.border}`, background: D.bg }}>

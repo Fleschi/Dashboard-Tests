@@ -1,13 +1,15 @@
 import { useTradeData, useIsMobile, useDesign, useNavigation } from "./hooks";
-import { MODULES, SETTINGS_MODULE, BOTTOM_NAV_H } from "./constants.jsx";
+import { MODULES, SETTINGS_MODULE } from "./constants.jsx";
 
 import { GlobalStyles }  from "./components/GlobalStyles";
 import NavIcon           from "./components/NavIcon";
 import ModuleContent     from "./components/ModuleContent";
 import Settings          from "./modules/Settings";
+import PageBackground    from "./components/PageBackground";
 
-const FONT  = "'DM Sans', system-ui, sans-serif";
-const NAV_H = 56;
+const FONT       = "'DM Sans', system-ui, sans-serif";
+const SIDEBAR_W  = 216;
+const BOTTOM_NAV_H = 56;
 
 export default function App() {
   const { trades, setTrades, stats, loading, error } = useTradeData();
@@ -18,6 +20,8 @@ export default function App() {
   const D      = design;
   const goToData = () => setTab("data");
 
+  const activeModule = globalTab === "settings" ? SETTINGS_MODULE : MODULES.find(m => m.id === tab);
+
   if (error) return (
     <div style={{ minHeight: "100vh", background: D.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ color: D.red, fontSize: 14 }}>Error: {error}</div>
@@ -25,7 +29,7 @@ export default function App() {
   );
 
   const content = loading ? (
-    <div style={{ textAlign: "center", padding: 80, color: D.textMuted, fontSize: 13, letterSpacing: "0.06em", textTransform: "uppercase" }}>Loading...</div>
+    <div style={{ textAlign: "center", padding: 80, color: D.textMuted, fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" }}>Loading</div>
   ) : (
     <>
       {globalTab === "settings" && <Settings design={D} onChange={setDesign} />}
@@ -43,21 +47,22 @@ export default function App() {
   if (isMobile) {
     const mobileTabs = [SETTINGS_MODULE, ...MODULES];
     return (
-      <div style={{ height: "100vh", color: D.text, fontFamily: FONT, display: "flex", flexDirection: "column", background: D.bg, overflow: "hidden" }}>
+      <div style={{ height: "100vh", color: D.text, fontFamily: FONT, display: "flex", flexDirection: "column", position: "relative", zIndex: 1, overflow: "hidden", background: D.bg }}>
         <GlobalStyles design={D} />
-        <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", flexShrink: 0, borderBottom: `1px solid ${D.border}` }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: D.text }}>
-            {globalTab === "settings" ? "Settings" : (MODULES.find(m => m.id === tab)?.label || "")}
+        <PageBackground design={D} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", flexShrink: 0, borderBottom: `1px solid ${D.border}`, background: D.bg }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: D.text, letterSpacing: "0.01em" }}>
+            {activeModule?.label || ""}
           </div>
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: 16, paddingBottom: BOTTOM_NAV_H + 16 }}>{content}</div>
-        <div style={{ height: BOTTOM_NAV_H, flexShrink: 0, background: D.bg, borderTop: `1px solid ${D.border}`, display: "flex", alignItems: "center", justifyContent: "space-around" }}>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: BOTTOM_NAV_H, background: D.sidebar, borderTop: `1px solid ${D.border}`, display: "flex", alignItems: "center", justifyContent: "space-around", zIndex: 20 }}>
           {mobileTabs.map(m => {
             const isActive = globalTab === "settings" ? m.id === "settings" : tab === m.id;
             return (
-              <button key={m.id} onClick={() => setTab(m.id)} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 0", background: "none", border: "none", cursor: "pointer", color: isActive ? D.text : D.textMuted }}>
+              <button key={m.id} onClick={() => setTab(m.id)} style={{ flex: 1, height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, background: "none", border: "none", borderTop: isActive ? `2px solid ${D.text}` : "2px solid transparent", cursor: "pointer", color: isActive ? D.text : D.textMuted }}>
                 <NavIcon path={m.icon} />
-                <span style={{ fontSize: 9, fontWeight: isActive ? 700 : 400, letterSpacing: "0.02em" }}>{m.label}</span>
+                <span style={{ fontSize: 9, fontWeight: isActive ? 700 : 400, letterSpacing: "0.04em" }}>{m.label}</span>
               </button>
             );
           })}
@@ -68,31 +73,50 @@ export default function App() {
 
   // ── Desktop ───────────────────────────────────────────────────────────────
   return (
-    <div style={{ height: "100vh", color: D.text, fontFamily: FONT, background: D.bg, overflow: "hidden" }}>
+    <div style={{ height: "100vh", color: D.text, fontFamily: FONT, position: "relative", zIndex: 1, overflow: "hidden", background: D.bg, display: "flex" }}>
       <GlobalStyles design={D} />
+      <PageBackground design={D} />
 
-      <div style={{ height: NAV_H, borderBottom: `1px solid ${D.border}`, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      {/* Sidebar */}
+      <div className="side-rail" style={{ width: SIDEBAR_W, flexShrink: 0, position: "relative", zIndex: 20 }}>
+        <div className="side-logo">
+          <div className="side-mark"><span /><span /><span /><span /></div>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: D.text }}>DASHBOARD</div>
+        </div>
+
+        <nav className="side-nav">
           {MODULES.map(m => {
             const isActive = globalTab !== "settings" && tab === m.id;
             return (
-              <button key={m.id} className={`nav-btn${isActive ? " active" : ""}`} onClick={() => setTab(m.id)}>
+              <button key={m.id} className={`side-item${isActive ? " active" : ""}`} onClick={() => setTab(m.id)}>
                 <NavIcon path={m.icon} />
                 <span>{m.label}</span>
               </button>
             );
           })}
-          <div style={{ width: 1, height: 18, background: D.border, margin: "0 6px" }} />
-          <button className={`nav-btn${globalTab === "settings" ? " active" : ""}`} onClick={() => setTab("settings")}>
+        </nav>
+
+        <div className="side-foot">
+          <button className={`side-item${globalTab === "settings" ? " active" : ""}`} onClick={() => setTab("settings")}>
             <NavIcon path={SETTINGS_MODULE.icon} />
             <span>{SETTINGS_MODULE.label}</span>
           </button>
         </div>
       </div>
 
-      <div style={{ height: `calc(100% - ${NAV_H}px)`, overflowY: "auto" }}>
-        <div style={{ padding: "24px max(24px, 10vw) 32px" }}>
-          {content}
+      {/* Main column */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, position: "relative", zIndex: 1 }}>
+        <div className="top-bar">
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+            <span className="top-bar-crumb">Dashboard /</span>
+            <span className="top-bar-title">{activeModule?.label || ""}</span>
+          </div>
+        </div>
+
+        <div style={{ flex: 1, overflowY: "auto" }}>
+          <div style={{ padding: "28px 32px 40px" }}>
+            {content}
+          </div>
         </div>
       </div>
     </div>

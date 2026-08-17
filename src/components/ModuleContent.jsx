@@ -30,7 +30,7 @@ export default function ModuleContent({ tab, globalTab, trades, setTrades, stats
 
 function EmptyState({ message, label, onAction, design: D }) {
   return (
-    <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 48, textAlign: "center" }}>
+    <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 4, padding: 48, textAlign: "center" }}>
       <div style={{ color: D.textMuted, marginBottom: 12 }}>{message}</div>
       <span style={{ color: D.blue, cursor: "pointer", fontWeight: 600 }} onClick={onAction}>{label}</span>
     </div>

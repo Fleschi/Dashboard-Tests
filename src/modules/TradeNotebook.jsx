@@ -50,23 +50,23 @@ const emptyForm = () => ({
 
 // ─── Small UI ─────────────────────────────────────────────────────────────────
 
-function SelBtn({ label, active, color, muted, onClick }) {
+function SelBtn({ label, active, color, onClick }) {
   return (
     <button type="button" onClick={onClick} style={{
       padding: "6px 16px", borderRadius: 8,
       border: `1px solid ${active ? color : "transparent"}`,
       background: active ? `${color}18` : "transparent",
-      color: active ? color : muted,
+      color: active ? color : "#525252",
       fontSize: 13, cursor: "pointer", fontWeight: active ? 600 : 400,
       transition: "all 0.15s",
     }}>{label}</button>
   );
 }
 
-function Field({ label, muted, children }) {
+function Field({ label, children }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      {label && <label style={{ fontSize: 11, color: muted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</label>}
+      {label && <label style={{ fontSize: 11, color: "#525252", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</label>}
       {children}
     </div>
   );
@@ -105,9 +105,9 @@ function AttachButton({ label, file, existingUrl, onFile, onClear, D, uploading 
         <button type="button" onClick={() => ref.current.click()} style={{
           padding: "7px 16px", borderRadius: 8, border: `1px solid ${D.border}`,
           background: "transparent", color: D.textMuted, fontSize: 12, cursor: "pointer",
-          width: "fit-content",
+          display: "flex", alignItems: "center", gap: 6, width: "fit-content",
         }}>
-          {label}
+          <span style={{ fontSize: 14 }}>📎</span> {label}
         </button>
       ) : (
         <div style={{ position: "relative", display: "inline-block" }}>
@@ -144,7 +144,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <span style={{ fontSize: 14, color: D.text, fontFamily: "monospace", fontWeight: 600 }}>{entry.time_entered}</span>
           {bias && (
-            <span style={{ fontSize: 12, fontWeight: 700, color: biasColor }}>{bias}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 8, background: `${biasColor}18`, color: biasColor, border: `1px solid ${biasColor}30` }}>{bias}</span>
           )}
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -170,7 +170,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
             <div>
               <div style={{ fontSize: 11, color: D.textMuted, marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>Daily Bias</div>
               <img src={entry.screenshot_htf_url} alt="Daily Bias"
-                style={{ width: "100%", borderRadius: 16, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
+                style={{ width: "100%", borderRadius: 12, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
                 onClick={() => window.open(entry.screenshot_htf_url, "_blank")}
                 onError={e => { e.target.style.display = "none"; }} />
             </div>
@@ -179,7 +179,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
             <div>
               <div style={{ fontSize: 11, color: D.textMuted, marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>Trade of the Day</div>
               <img src={entry.screenshot_tod_url} alt="TOD"
-                style={{ width: "100%", borderRadius: 16, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
+                style={{ width: "100%", borderRadius: 12, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
                 onClick={() => window.open(entry.screenshot_tod_url, "_blank")}
                 onError={e => { e.target.style.display = "none"; }} />
             </div>
@@ -192,7 +192,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
         <div>
           <div style={{ fontSize: 11, color: D.textMuted, marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>My Trade</div>
           <img src={entry.screenshot_my_trade_url} alt="My Trade"
-            style={{ width: "100%", borderRadius: 16, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
+            style={{ width: "100%", borderRadius: 12, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
             onClick={() => window.open(entry.screenshot_my_trade_url, "_blank")}
             onError={e => { e.target.style.display = "none"; }} />
         </div>
@@ -208,7 +208,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
 
       {/* Key Takeaway */}
       {entry.key_takeaway && (
-        <div style={{ background: `${D.blue}08`, border: `1px solid ${D.blue}25`, borderRadius: 16, padding: 18 }}>
+        <div style={{ background: `${D.blue}08`, border: `1px solid ${D.blue}25`, borderRadius: 12, padding: 18 }}>
           <div style={{ fontSize: 11, color: D.blue, marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>Key Takeaway</div>
           <div style={{ fontSize: 14, color: D.text, lineHeight: 1.6, fontWeight: 500 }}>{formatBulletPoints(entry.key_takeaway)}</div>
         </div>
@@ -369,7 +369,7 @@ export default function TradeNotebook({ design: D }) {
 
       {/* Undo */}
       {deletedEntry && (
-        <div style={{ position: "fixed", top: 20, left: 20, zIndex: 1000, background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: "12px 20px", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
+        <div style={{ position: "fixed", top: 20, left: 20, zIndex: 1000, background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: "12px 20px", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
           <span style={{ fontSize: 13, color: D.text }}>Entry deleted</span>
           <button onClick={handleUndo} style={{ background: D.blue, color: "#fff", border: "none", borderRadius: 8, padding: "6px 14px", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>Undo</button>
           <button onClick={() => { if (undoTimeout) clearTimeout(undoTimeout); setDeletedEntry(null); }} style={{ background: "transparent", color: D.textMuted, border: "none", cursor: "pointer", fontSize: 16, padding: "0 4px" }}>×</button>
@@ -403,16 +403,16 @@ export default function TradeNotebook({ design: D }) {
         <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
 
           {/* Date */}
-          <Field label="Date & Time" muted={D.textMuted}>
+          <Field label="Date & Time">
             <TextInput value={form.datetime} onChange={handleDatetime} D={D} placeholder="DD/MM/YY HH:MM" style={{ maxWidth: 180, fontFamily: "monospace" }} />
           </Field>
 
           {/* Daily Bias */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-            <Field label="Daily Bias" muted={D.textMuted}>
+            <Field label="Daily Bias">
               <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                 {["Bullish", "Bearish"].map(t => (
-                  <SelBtn key={t} label={t} active={form.dailyBias === t} color={t === "Bullish" ? D.green : D.red} muted={D.textMuted} onClick={() => set("dailyBias", t)} />
+                  <SelBtn key={t} label={t} active={form.dailyBias === t} color={t === "Bullish" ? D.green : D.red} onClick={() => set("dailyBias", t)} />
                 ))}
               </div>
               <AttachButton label="Attach chart" file={form.fileDailyBias} existingUrl={form.existingDailyBiasUrl}
@@ -421,7 +421,7 @@ export default function TradeNotebook({ design: D }) {
             </Field>
 
             {/* Trade of the Day */}
-            <Field label="Trade of the Day" muted={D.textMuted}>
+            <Field label="Trade of the Day">
               <AttachButton label="Attach chart" file={form.fileTOD} existingUrl={form.existingTODUrl}
                 onFile={f => set("fileTOD", f)} onClear={() => { set("fileTOD", null); set("existingTODUrl", null); }}
                 uploading={uploadingSlot === "Trade of the Day"} D={D} />
@@ -429,24 +429,24 @@ export default function TradeNotebook({ design: D }) {
           </div>
 
           {/* Draws on Liquidity */}
-          <Field label="Draws on Liquidity" muted={D.textMuted}>
+          <Field label="Draws on Liquidity">
             <Textarea value={form.drawsOnLiquidity} onChange={e => set("drawsOnLiquidity", e.target.value)} D={D} rows={3} />
           </Field>
 
           {/* My Trade */}
-          <Field label="My Trade (Execution)" muted={D.textMuted}>
+          <Field label="My Trade (Execution)">
             <AttachButton label="Attach chart" file={form.fileMyTrade} existingUrl={form.existingMyTradeUrl}
               onFile={f => set("fileMyTrade", f)} onClear={() => { set("fileMyTrade", null); set("existingMyTradeUrl", null); }}
               uploading={uploadingSlot === "My Trade"} D={D} />
           </Field>
 
           {/* Notes */}
-          <Field label="Notes" muted={D.textMuted}>
+          <Field label="Notes">
             <Textarea value={form.notes} onChange={e => set("notes", e.target.value)} D={D} rows={4} />
           </Field>
 
           {/* Key Takeaway (optional) */}
-          <Field label="Key Takeaway / Learning (optional)" muted={D.textMuted}>
+          <Field label="Key Takeaway / Learning (optional)">
             <Textarea value={form.keyTakeaway} onChange={e => set("keyTakeaway", e.target.value)} D={D} rows={3} />
           </Field>
 

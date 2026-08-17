@@ -83,6 +83,41 @@ export async function updateTrade(id, trade) {
   if (error) throw error;
 }
 
+// ── Forward Trades ────────────────────────────────────────────────────────────
+
+export async function loadForwardTrades() {
+  const { data, error } = await supabase
+    .from("forward_trades")
+    .select("*")
+    .order("date", { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
+export async function saveForwardTrade(trade) {
+  const { data, error } = await supabase.from("forward_trades").insert([{
+    date: trade.date,
+    pnl: trade.pnl,
+    rr: trade.rr,
+  }]).select();
+  if (error) throw error;
+  return data[0];
+}
+
+export async function updateForwardTrade(id, trade) {
+  const { error } = await supabase.from("forward_trades").update({
+    date: trade.date,
+    pnl: trade.pnl,
+    rr: trade.rr,
+  }).eq("id", id);
+  if (error) throw error;
+}
+
+export async function deleteForwardTrade(id) {
+  const { error } = await supabase.from("forward_trades").delete().eq("id", id);
+  if (error) throw error;
+}
+
 // ── Notebook Entries ──────────────────────────────────────────────────────────
 
 export async function loadNotebookEntries() {

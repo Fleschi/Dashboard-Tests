@@ -18,8 +18,16 @@ export function calcStats(trades) {
   const avgLoss = losses.length ? Math.abs(losses.reduce((a, t) => a + t.pnl, 0) / losses.length) : 0;
   const avgRR   = losses.length && avgLoss > 0 ? avgWin / avgLoss : 0;
 
-  const expectancy = winRate * avgWin - (1 - winRate) * avgLoss;
+  const grossProfit  = wins.reduce((a, t) => a + t.pnl, 0);
+  const grossLoss    = Math.abs(losses.reduce((a, t) => a + t.pnl, 0));
+  const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : 0;
+  const expectancy   = winRate * avgWin - (1 - winRate) * avgLoss;
+
   const avgPnl = totalPnl / trades.length;
+  const std = pnls.length > 1
+    ? Math.sqrt(pnls.reduce((a, p) => a + (p - avgPnl) ** 2, 0) / pnls.length)
+    : 0;
+  const sharpe = std > 0 ? (avgPnl / std) * Math.sqrt(252) : 0;
 
   // Max Drawdown
   let running = 0, peak = 0, mdd = 0;
@@ -57,13 +65,24 @@ export function calcStats(trades) {
   const weeklyPnls = Object.values(weeklyMap);
   const avgTradesPerWeek = weeklyPnls.length > 0 ? trades.length / weeklyPnls.length : 0;
 
+  const assetMap = {};
+  for (const t of classified) {
+    const a = t.asset || "Unknown";
+    if (!assetMap[a]) assetMap[a] = { wins: 0, losses: 0, bes: 0, pnl: 0 };
+    assetMap[a].pnl += t.pnl;
+    if (t.outcome === "win")       assetMap[a].wins++;
+    else if (t.outcome === "loss") assetMap[a].losses++;
+    else                           assetMap[a].bes++;
+  }
+
   return {
     totalPnl, avgPnl, totalTrades: trades.length,
     wins: wins.length, losses: losses.length, bes: bes.length,
-    winRate, avgWin, avgLoss, avgRR, expectancy,
-    mdd, equityCurve,
+    winRate, avgWin, avgLoss, avgRR,
+    grossProfit, grossLoss, profitFactor, expectancy,
+    std, sharpe, mdd, equityCurve, weeklyPnls,
     maxWinStreak, maxLossStreak,
-    avgTradesPerWeek,
+    assetMap, avgTradesPerWeek,
     rawTrades: trades,
   };
 }
@@ -73,7 +92,8 @@ export function percentile(arr, p) {
   return sorted[Math.floor((p / 100) * sorted.length)] ?? 0;
 }
 
-export const fmt = (n) => n >= 0 ? `+$${Number(n).toFixed(0)}` : `-$${Math.abs(Number(n)).toFixed(0)}`;
+export const fmt    = (n) => n >= 0 ? `+$${Number(n).toFixed(0)}` : `-$${Math.abs(Number(n)).toFixed(0)}`;
+export const fmtPct = (n) => `${(n * 100).toFixed(1)}%`;
 
 // ─── Student-t Distribution ───────────────────────────────────────────────────
 

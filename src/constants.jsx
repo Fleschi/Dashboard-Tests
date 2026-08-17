@@ -1,9 +1,11 @@
 // ─── Design ───────────────────────────────────────────────────────────────────
 
 export const DEFAULT_DESIGN = {
-  bg: "#0b0b0c", card: "#131315", border: "#232326",
-  green: "#10e8a0", red: "#ff4d6d", blue: "#e4e4e7", purple: "#e4e4e7",
-  yellow: "#8a8a92", text: "#f2f2f3", textMuted: "#6b6b72",
+  bg: "#0a0a0a", card: "#111111", border: "#242424", sidebar: "#000000",
+  green: "#2dd888", red: "#ff5470", blue: "#f5f5f5", purple: "#f5f5f5",
+  yellow: "#f5f5f5", text: "#f5f5f5", textMuted: "#5c5c5c",
+  radius: 4,
+  background: "none", radialColor: "#a78bfa",
 };
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
@@ -25,3 +27,66 @@ export const SETTINGS_MODULE = {
 
 export const BOTTOM_NAV_H      = 56;
 export const MOBILE_BREAKPOINT = 768;
+
+// ─── Backgrounds ─────────────────────────────────────────────────────────────
+
+export const BACKGROUNDS = [
+  {
+    id: "none",
+    label: "Solid",
+    preview: (bg) => ({ background: bg }),
+    render: () => null,
+  },
+  {
+    id: "radial-dual",
+    label: "Dual Radial",
+    preview: (bg, rc = "#a78bfa") => ({
+      background: `radial-gradient(circle at 20% 80%, ${rc}45, transparent 50%), radial-gradient(circle at 80% 20%, ${rc}35, transparent 50%), ${bg}`,
+    }),
+    render: (D) => (
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
+        background: `radial-gradient(circle 700px at 15% 85%, ${D.radialColor || "#a78bfa"}22, transparent), radial-gradient(circle 700px at 85% 15%, ${D.radialColor || "#a78bfa"}18, transparent), ${D.bg}`,
+      }} />
+    ),
+  },
+  {
+    id: "radial-multi",
+    label: "Multi Gradient",
+    preview: (bg) => ({
+      background: `radial-gradient(circle at 50% 120%, #a78bfa40, transparent 35%), radial-gradient(circle at 50% 110%, #ffffff20, transparent 40%), ${bg}`,
+    }),
+    render: (D) => (
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: `radial-gradient(circle 900px at 50% 120%, ${D.multiColor1 || "#a78bfa"}${Math.round((D.multiOpacity1 || 0.25) * 255).toString(16).padStart(2, "0")}, transparent), radial-gradient(circle 800px at 50% 115%, ${D.multiColor2 || "#ffffff"}${Math.round((D.multiOpacity2 || 0.15) * 255).toString(16).padStart(2, "0")}, transparent), ${D.bg}`,
+          filter: "blur(60px)",
+        }} />
+      </div>
+    ),
+  },
+  {
+    id: "mesh-gradient",
+    label: "Mesh Gradient",
+    preview: (bg) => ({
+      background: `radial-gradient(circle at 100% 0%, #6366f140, transparent 50%), radial-gradient(circle at 0% 100%, #8b5cf640, transparent 50%), radial-gradient(circle at 100% 100%, #3b82f630, transparent 50%), ${bg}`,
+    }),
+    render: (D) => (
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: `
+            radial-gradient(circle 800px at 100% 0%, ${D.meshColor1 || "#6366f1"}${Math.round((D.meshOpacity1 || 0.35) * 255).toString(16).padStart(2, "0")}, transparent),
+            radial-gradient(circle 700px at 0% 100%, ${D.meshColor2 || "#8b5cf6"}${Math.round((D.meshOpacity2 || 0.35) * 255).toString(16).padStart(2, "0")}, transparent),
+            radial-gradient(circle 600px at 100% 100%, ${D.meshColor3 || "#3b82f6"}${Math.round((D.meshOpacity3 || 0.25) * 255).toString(16).padStart(2, "0")}, transparent),
+            radial-gradient(circle 500px at 0% 0%, ${D.meshColor4 || "#1e1b4b"}${Math.round((D.meshOpacity4 || 0.4) * 255).toString(16).padStart(2, "0")}, transparent),
+            ${D.bg}
+          `,
+          filter: "blur(80px)",
+        }} />
+      </div>
+    ),
+  },
+];

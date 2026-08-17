@@ -138,7 +138,7 @@ export default function MonteCarlo({ stats, design }) {
   }, [stats, simWeeks]);
 
   if (!stats?.rawTrades?.length) return (
-    <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 40, textAlign: "center", color: D.textMuted }}>No trades yet.</div>
+    <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 40, textAlign: "center", color: D.textMuted }}>No trades yet.</div>
   );
 
   const fmtMC = n => Number(n) >= 0 ? `+$${Math.abs(Number(n)).toFixed(0)}` : `-$${Math.abs(Number(n)).toFixed(0)}`;
@@ -150,7 +150,7 @@ export default function MonteCarlo({ stats, design }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
       {/* ── Timeframe + Paths — single card ── */}
-      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 24 }}>
+      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 24 }}>
         {/* Timeframe row */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
           <span style={{ fontSize: 12, color: D.textMuted, fontWeight: 500 }}>Timeframe</span>
@@ -189,7 +189,7 @@ export default function MonteCarlo({ stats, design }) {
 
       {/* ── Percentile table ── */}
       {mcResults && (
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 24 }}>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 24 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 16 }}>Percentile Summary</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 10 }}>
             {[
@@ -211,7 +211,7 @@ export default function MonteCarlo({ stats, design }) {
 
       {/* ── Histogram ── */}
       {mcResults && (
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 24 }}>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 24 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 16 }}>Final PnL Distribution</div>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={hist}>
