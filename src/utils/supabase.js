@@ -154,14 +154,10 @@ export async function updateNotebookEntry(id, entry) {
     daily_bias:            entry.daily_bias,
     draws_on_liquidity:    entry.draws_on_liquidity,
     went_good:             entry.went_good,
-    went_wrong:            entry.went_wrong,
     key_takeaway:          entry.key_takeaway,
-    type:                  entry.type,
-    outcome:               entry.outcome || null,
   };
   if (entry.screenshot_htf_url      !== undefined) updates.screenshot_htf_url      = entry.screenshot_htf_url;
   if (entry.screenshot_tod_url      !== undefined) updates.screenshot_tod_url      = entry.screenshot_tod_url;
-  if (entry.screenshot_exec_url     !== undefined) updates.screenshot_exec_url     = entry.screenshot_exec_url;
   if (entry.screenshot_my_trade_url !== undefined) updates.screenshot_my_trade_url = entry.screenshot_my_trade_url;
 
   const { data, error } = await supabase
