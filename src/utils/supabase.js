@@ -140,9 +140,7 @@ export async function saveNotebookEntry(entry) {
       screenshot_tod_url:      entry.screenshot_tod_url      || null,
       screenshot_my_trade_url: entry.screenshot_my_trade_url || null,
       went_good:               entry.went_good,
-      went_wrong:              entry.went_wrong,
       key_takeaway:            entry.key_takeaway,
-      type:                    entry.type,
     }])
     .select()
     .single();
