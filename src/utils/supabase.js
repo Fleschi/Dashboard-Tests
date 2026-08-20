@@ -144,7 +144,6 @@ export async function saveNotebookEntry(entry) {
       went_wrong:              entry.went_wrong,
       key_takeaway:            entry.key_takeaway,
       type:                    entry.type,
-      outcome:                 entry.outcome || null,
     }])
     .select()
     .single();
