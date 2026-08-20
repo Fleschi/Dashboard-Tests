@@ -144,7 +144,6 @@ export async function saveNotebookEntry(entry) {
       went_wrong:              entry.went_wrong,
       key_takeaway:            entry.key_takeaway,
       type:                    entry.type,
-      along_htf:               entry.along_htf,
       outcome:                 entry.outcome || null,
     }])
     .select()
@@ -162,7 +161,6 @@ export async function updateNotebookEntry(id, entry) {
     went_wrong:            entry.went_wrong,
     key_takeaway:          entry.key_takeaway,
     type:                  entry.type,
-    along_htf:             entry.along_htf,
     outcome:               entry.outcome || null,
   };
   if (entry.screenshot_htf_url      !== undefined) updates.screenshot_htf_url      = entry.screenshot_htf_url;
