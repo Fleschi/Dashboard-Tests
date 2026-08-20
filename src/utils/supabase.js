@@ -138,7 +138,6 @@ export async function saveNotebookEntry(entry) {
       draws_on_liquidity:      entry.draws_on_liquidity,
       screenshot_htf_url:      entry.screenshot_htf_url      || null,
       screenshot_tod_url:      entry.screenshot_tod_url      || null,
-      screenshot_exec_url:     entry.screenshot_exec_url     || null,
       screenshot_my_trade_url: entry.screenshot_my_trade_url || null,
       went_good:               entry.went_good,
       went_wrong:              entry.went_wrong,
