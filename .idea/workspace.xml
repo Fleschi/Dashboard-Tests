@@ -6,26 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f42abc69-75ee-423a-b997-afca88291304" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Charts.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/GlobalStyles.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ModuleContent.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/NavIcon.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/PageBackground.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/constants.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/DataEntry.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/MonteCarlo.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/Overview.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/PropFirm.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/Settings.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modules/TradeNotebook.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/calculations.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/supabase.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/ui.js" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,9 +43,15 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/linus/IdeaProjects/Dashboard-Tests&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\linus\IdeaProjects\Dashboard-Tests" />
+    </key>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="f42abc69-75ee-423a-b997-afca88291304" name="Changes" comment="" />
