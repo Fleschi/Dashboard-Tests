@@ -15,7 +15,6 @@ function calcTradesPerWeek(trades) {
   return Math.max(1, trades.length / Math.max(1, Object.keys(map).length));
 }
 
-// Neue $1k Histogram Funktion
 function buildHistogram1k(finals) {
   if (!finals?.length) return [];
 
@@ -54,7 +53,7 @@ function runMC(trades, simCount, weeks) {
   const tradesPerWeek = calcTradesPerWeek(trades);
   const tradesTotal = Math.min(Math.round(weeks * tradesPerWeek), 1500);
 
-  // Mindestens 20 Snapshots für gleichmäßige Verteilung, maximal alle 5 Trades ein Snapshot
+  // At least 20 snapshots for an even spread, at most one snapshot every 5 trades
   const minSnapshots = 20;
   const maxSnapshotInterval = Math.max(1, Math.floor(tradesTotal / minSnapshots));
   const snapshotInterval = Math.min(
@@ -62,8 +61,8 @@ function runMC(trades, simCount, weeks) {
     maxSnapshotInterval
   );
 
-  // Begrenze Simulationen basierend auf Trade Sample Size
-  // Bei kleiner Sample Size (< 500 Trades) weniger Sims um Überlappung zu vermeiden
+  // Cap simulations based on the trade sample size
+  // With a small sample (< 500 trades), run fewer sims to avoid excessive overlap
   const maxSimsBasedOnSampleSize = pnls.length < 500
     ? Math.min(simCount, 500)
     : simCount;

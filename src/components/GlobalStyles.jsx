@@ -93,27 +93,6 @@ export function GlobalStyles({ design: D }) {
         color: ${D.textMuted};
       }
 
-      /* ── Divider ────────────────────────────────────────────────────── */
-
-      .grid-divider { width: 1px; height: 16px; background: ${D.border}; margin: 0 4px; }
-
-      /* ── Nav items (mobile bottom bar) ─────────────────────────────── */
-
-      .nav-item {
-        display: flex; align-items: center; gap: 12px;
-        padding: 10px 18px; cursor: pointer; font-size: 13px; font-weight: 500;
-        border: none; background: none; text-align: left; color: ${D.textMuted};
-        border-radius: 2px; margin: 2px 8px; width: calc(100% - 16px);
-        transition: color 0.15s ease, background 0.15s ease; white-space: nowrap; overflow: hidden;
-      }
-      .nav-item:hover { background: ${D.text}08; color: ${D.text}; }
-      .nav-item.active-back { background: ${D.text}0c; color: ${D.text}; }
-      .nav-item.active-fwd  { background: ${D.green}14; color: ${D.green}; }
-      .nav-item.active-settings { background: ${D.text}0c; color: ${D.text}; }
-
-      .nav-label { transition: opacity 0.1s ease; }
-      .nav-label.hidden { opacity: 0; pointer-events: none; width: 0; }
-
       ::-webkit-scrollbar { width: 4px; height: 4px; }
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb { background: ${D.border}; }

@@ -1,5 +1,5 @@
 import { useTradeData, useIsMobile, useDesign, useNavigation } from "./hooks";
-import { MODULES, SETTINGS_MODULE } from "./constants.jsx";
+import { MODULES, SETTINGS_MODULE, BOTTOM_NAV_H } from "./constants.jsx";
 
 import { GlobalStyles }  from "./components/GlobalStyles";
 import NavIcon           from "./components/NavIcon";
@@ -7,9 +7,8 @@ import ModuleContent     from "./components/ModuleContent";
 import Settings          from "./modules/Settings";
 import PageBackground    from "./components/PageBackground";
 
-const FONT       = "'DM Sans', system-ui, sans-serif";
-const SIDEBAR_W  = 216;
-const BOTTOM_NAV_H = 56;
+const FONT      = "'DM Sans', system-ui, sans-serif";
+const SIDEBAR_W = 216;
 
 export default function App() {
   const { trades, setTrades, stats, loading, error } = useTradeData();

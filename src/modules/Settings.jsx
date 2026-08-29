@@ -25,7 +25,7 @@ export default function Settings({ design, onChange }) {
 
   const inp = { padding: "8px 14px", background: D.bg, border: `1px solid ${D.border}`, borderRadius: 8, color: D.text, fontSize: 13, fontFamily: "monospace", width: "100%", outline: "none" };
   const lbl = { fontSize: 11, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 6, fontWeight: 600 };
-  const reset = () => { onChange(DEFAULT_DESIGN); saveDesign(DEFAULT_DESIGN); };
+  const reset = () => onChange(DEFAULT_DESIGN);
 
   const visibleBgs = BACKGROUNDS.filter(b => ALLOWED_BG.includes(b.id));
 

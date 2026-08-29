@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 
 import { loadPropFirms, savePropFirm, updatePropFirm, deletePropFirm } from "../utils/supabase";
-import { fitStudentT, sampleStudentT } from "../utils/calculations";
+import { fitStudentT, sampleStudentT, fmtPct } from "../utils/calculations";
 
 const DEFAULT_FIRM = (id) => ({
   id, name: `Prop Firm ${id}`,
@@ -312,10 +312,7 @@ export default function PropFirm({ stats, design }) {
   if (loading) return <div style={{ color: D.textMuted, padding: 40, textAlign: "center" }}>Loading...</div>;
 
   const fmtUSD = n => (!n && n !== 0) ? "—" : n >= 0 ? `+$${Math.round(n).toLocaleString()}` : `-$${Math.abs(Math.round(n)).toLocaleString()}`;
-  const fmtPct = n => `${(n * 100).toFixed(1)}%`;
   const fmtD   = n => n ? `${n.toFixed(0)}d` : "—";
-
-
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
