@@ -1,12 +1,25 @@
 // ─── Design ───────────────────────────────────────────────────────────────────
 
-export const DEFAULT_DESIGN = {
-  bg: "#0a0a0a", card: "#111111", border: "#242424", sidebar: "#000000",
-  green: "#2dd888", red: "#ff5470", blue: "#f5f5f5", purple: "#f5f5f5",
-  yellow: "#f5f5f5", text: "#f5f5f5", textMuted: "#5c5c5c",
-  radius: 10, radiusSm: 6,
-  background: "none", radialColor: "#a78bfa",
-};
+export const THEMES = [
+  {
+    themeId: "terminal", label: "Terminal", description: "Dark, cool-toned",
+    bg: "#0a0e15", card: "#10161f", border: "#1c2735", sidebar: "#070a10",
+    green: "#3ddc97", red: "#ff5470", blue: "#4f9dff", purple: "#4f9dff",
+    yellow: "#f0b84f", text: "#e9eef5", textMuted: "#647388",
+    radius: 10,
+    background: "none", radialColor: "#4f9dff",
+  },
+  {
+    themeId: "stripe", label: "Stripe", description: "Light, clean & airy",
+    bg: "#fafaf9", card: "#ffffff", border: "#e5e3de", sidebar: "#ffffff",
+    green: "#1f9d63", red: "#e0393e", blue: "#6a5acd", purple: "#6a5acd",
+    yellow: "#c98a1c", text: "#28262a", textMuted: "#8f8c85",
+    radius: 10,
+    background: "none", radialColor: "#6a5acd",
+  },
+];
+
+export const DEFAULT_DESIGN = THEMES[0];
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 

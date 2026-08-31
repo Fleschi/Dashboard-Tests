@@ -10,7 +10,7 @@ export default function ModuleContent({ tab, globalTab, trades, setTrades, stats
   return (
     <>
       <div style={{ display: tab === "data" ? "block" : "none" }}>
-        <DataEntry trades={trades} onTradesChange={setTrades} design={D} mode="backtesting" />
+        <DataEntry trades={trades} onTradesChange={setTrades} design={D} />
       </div>
 
       {tab !== "data" && (

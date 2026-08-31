@@ -1,5 +1,5 @@
 import { useTradeData, useIsMobile, useDesign, useNavigation } from "./hooks";
-import { MODULES, SETTINGS_MODULE } from "./constants.jsx";
+import { MODULES, SETTINGS_MODULE, BOTTOM_NAV_H } from "./constants.jsx";
 
 import { GlobalStyles }  from "./components/GlobalStyles";
 import NavIcon           from "./components/NavIcon";
@@ -7,8 +7,8 @@ import ModuleContent     from "./components/ModuleContent";
 import Settings          from "./modules/Settings";
 import PageBackground    from "./components/PageBackground";
 
-const FONT       = "'DM Sans', system-ui, sans-serif";
-const BOTTOM_NAV_H = 56;
+const FONT      = "'DM Sans', system-ui, sans-serif";
+const SIDEBAR_W = 232;
 
 export default function App() {
   const { trades, setTrades, stats, loading, error } = useTradeData();
@@ -76,37 +76,35 @@ export default function App() {
       <GlobalStyles design={D} />
       <PageBackground design={D} />
 
-      {/* Floating sidebar pill */}
-      <div className="side-pill">
-        <div className="side-logo-row">
+      {/* Sidebar */}
+      <div className="side-rail" style={{ width: SIDEBAR_W, flexShrink: 0, position: "relative", zIndex: 20 }}>
+        <div className="side-logo">
           <div className="side-mark"><span /><span /><span /><span /></div>
-          <span className="side-logo-label">DASHBOARD</span>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: D.text }}>DASHBOARD</div>
         </div>
 
-        <div className="side-pill-group">
+        <nav className="side-nav">
           {MODULES.map(m => {
             const isActive = globalTab !== "settings" && tab === m.id;
             return (
               <button key={m.id} className={`side-item${isActive ? " active" : ""}`} onClick={() => setTab(m.id)}>
                 <NavIcon path={m.icon} />
-                <span className="side-item-label">{m.label}</span>
+                <span>{m.label}</span>
               </button>
             );
           })}
-        </div>
+        </nav>
 
-        <div className="side-pill-divider" />
-
-        <div className="side-pill-group">
+        <div className="side-foot">
           <button className={`side-item${globalTab === "settings" ? " active" : ""}`} onClick={() => setTab("settings")}>
             <NavIcon path={SETTINGS_MODULE.icon} />
-            <span className="side-item-label">{SETTINGS_MODULE.label}</span>
+            <span>{SETTINGS_MODULE.label}</span>
           </button>
         </div>
       </div>
 
       {/* Main column */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, position: "relative", zIndex: 1, marginLeft: 84 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, position: "relative", zIndex: 1 }}>
         <div className="top-bar">
           <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
             <span className="top-bar-crumb">Dashboard /</span>
@@ -115,7 +113,7 @@ export default function App() {
         </div>
 
         <div style={{ flex: 1, overflowY: "auto" }}>
-          <div style={{ padding: "28px 32px 40px" }}>
+          <div style={{ padding: "32px 40px 48px" }}>
             {content}
           </div>
         </div>

@@ -27,7 +27,7 @@ function SegmentedDateInput({ parts, onChange, D }) {
   const box = {
     display: "flex", alignItems: "center",
     background: D.bg, border: `1px solid ${D.border}`,
-    borderRadius: D.radiusSm ?? 6, padding: "0 10px", height: 38, gap: 0,
+    borderRadius: 8, padding: "0 10px", height: 38, gap: 0,
   };
   const seg = {
     background: "transparent", border: "none", outline: "none",
@@ -116,8 +116,8 @@ export default function DataEntry({ trades, onTradesChange, design }) {
   const [editId, setEditId]     = useState(null);
   const [editForm, setEditForm] = useState({ ...EMPTY_PARTS(), rr:"", pnl:"" });
 
-  const numStyle = (border) => ({ padding:"9px 12px", background:D.bg, border:`1px solid ${border||D.border}`, borderRadius:D.radiusSm ?? 6, color:D.text, fontSize:13, width:"100%", outline:"none", height:38, boxSizing:"border-box" });
-  const labelStyle = { fontSize:10, color:D.textMuted, textTransform:"uppercase", letterSpacing:"0.08em", display:"block", marginBottom:7, fontWeight:600 };
+  const numStyle = (border) => ({ padding:"8px 12px", background:D.bg, border:`1px solid ${border||D.border}`, borderRadius:8, color:D.text, fontSize:13, width:"100%", outline:"none" });
+  const labelStyle = { fontSize:11, color:D.textMuted, textTransform:"uppercase", letterSpacing:"0.06em", display:"block", marginBottom:4 };
   const outcomeColor = pnl => pnl > 0 ? D.green : pnl < 0 ? D.red : D.yellow;
   const outcomeLabel = pnl => pnl > 0 ? "WIN" : pnl < 0 ? "LOSS" : "BE";
 
@@ -193,37 +193,33 @@ export default function DataEntry({ trades, onTradesChange, design }) {
     <div style={{ display:"flex", flexDirection:"column", gap:24 }}>
 
       {/* Form */}
-      <div style={{ background:D.card, border:`1px solid ${D.border}`, borderRadius:D.radius ?? 10, overflow:"hidden" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"18px 24px" }}>
-          <div style={{ fontSize:14, fontWeight:600, color:D.text }}>New Trade</div>
-          <button onClick={exportCSV} disabled={!trades.length} style={{ padding:"6px 14px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:D.radiusSm ?? 6, color:D.textMuted, cursor:"pointer", fontSize:12, fontWeight:500 }}>Export CSV</button>
+      <div style={{ background:D.card, border:`1px solid ${D.border}`, borderRadius:12, padding:24 }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+          <div style={{ fontSize:15, fontWeight:600, color:D.text }}>New Trade</div>
+          <button onClick={exportCSV} disabled={!trades.length} style={{ padding:"6px 14px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:8, color:D.textMuted, cursor:"pointer", fontSize:12, fontWeight:500 }}>Export CSV</button>
         </div>
-
-        <div style={{ borderTop:`1px solid ${D.border}`, padding:"20px 24px" }}>
-          <div style={{ display:"grid", gridTemplateColumns:"minmax(180px, 220px) 100px 120px minmax(100px, auto)", gap:16, alignItems:"end" }}>
-            <div>
-              <label style={labelStyle}>Date & Time</label>
-              <SegmentedDateInput parts={form} onChange={p=>setForm(f=>({...f,...p}))} D={D} />
-            </div>
-            <div>
-              <label style={labelStyle}>RR</label>
-              <input type="number" step="0.1" value={form.rr} onChange={e=>setForm(f=>({...f,rr:e.target.value}))} style={numStyle()} />
-            </div>
-            <div>
-              <label style={labelStyle}>PnL</label>
-              <input type="number" value={form.pnl} onChange={e=>setForm(f=>({...f,pnl:e.target.value}))}
-                style={numStyle(form.pnl!==""?outcomeColor(parseFloat(form.pnl)):undefined)} />
-            </div>
-            <button onClick={submit} disabled={saving||form.pnl===""} style={{ height:38, padding:"0 22px", background:D.text, color:D.bg, borderRadius:D.radiusSm ?? 6, border:"none", fontWeight:700, fontSize:13, cursor:"pointer", opacity:(saving||form.pnl==="")?0.4:1 }}>
-              {saving?"Saving...":"Add Trade"}
-            </button>
+        <div style={{ display:"flex", gap:12, alignItems:"flex-end", flexWrap:"wrap" }}>
+          <div>
+            <label style={labelStyle}>Date & Time</label>
+            <SegmentedDateInput parts={form} onChange={p=>setForm(f=>({...f,...p}))} D={D} />
           </div>
+          <div style={{ width:90 }}>
+            <label style={labelStyle}>RR</label>
+            <input type="number" step="0.1" value={form.rr} onChange={e=>setForm(f=>({...f,rr:e.target.value}))} style={numStyle()} />
+          </div>
+          <div style={{ width:110 }}>
+            <label style={labelStyle}>PnL</label>
+            <input type="number" value={form.pnl} onChange={e=>setForm(f=>({...f,pnl:e.target.value}))}
+              style={numStyle(form.pnl!==""?outcomeColor(parseFloat(form.pnl)):undefined)} />
+          </div>
+          <button onClick={submit} disabled={saving||form.pnl===""} style={{ padding:"8px 20px", background:D.text, color:D.bg, borderRadius:8, border:"none", fontWeight:700, fontSize:13, cursor:"pointer", opacity:(saving||form.pnl==="")?0.4:1, flexShrink:0 }}>
+            {saving?"Saving...":"Add"}
+          </button>
         </div>
-
-        <div style={{ borderTop:`1px solid ${D.border}`, padding:"12px 24px", display:"flex", justifyContent:"space-between", alignItems:"center", background:`${D.bg}80` }}>
+        <div style={{ marginTop:16, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <span style={{ fontSize:11, color:D.textMuted, fontWeight:500 }}>{trades.length} trades total</span>
           {selected.size>0 && (
-            <button onClick={deleteSelected} style={{ padding:"5px 14px", background:`${D.red}18`, border:`1px solid ${D.red}40`, borderRadius:D.radiusSm ?? 6, color:D.red, cursor:"pointer", fontSize:12, fontWeight:600 }}>
+            <button onClick={deleteSelected} style={{ padding:"5px 14px", background:`${D.red}18`, border:`1px solid ${D.red}40`, borderRadius:6, color:D.red, cursor:"pointer", fontSize:12, fontWeight:600 }}>
               Delete {selected.size}
             </button>
           )}
@@ -232,7 +228,7 @@ export default function DataEntry({ trades, onTradesChange, design }) {
 
       {/* Trade list */}
       {trades.length>0 && (
-        <div style={{ display:"flex", flexDirection:"column", background:D.card, border:`1px solid ${D.border}`, borderRadius:D.radius ?? 10, overflow:"hidden" }}>
+        <div style={{ display:"flex", flexDirection:"column", background:D.card, border:`1px solid ${D.border}`, borderRadius:12, overflow:"hidden" }}>
           <div style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"14px 20px", background:`${D.bg}80` }}>
             <input type="checkbox" checked={allSelected} onChange={toggleAll} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
             {[["date","Date"],["rr","RR"],["pnl","PnL"],["outcome","Status"]].map(([col,lbl])=>(
@@ -253,12 +249,12 @@ export default function DataEntry({ trades, onTradesChange, design }) {
               <div key={t.id||i} style={{ display:"grid", gridTemplateColumns:COLS, alignItems:"center", padding:"10px 20px", background:`${D.border}25`, gap:8 }}>
                 <input type="checkbox" checked={isSelected} onChange={()=>toggleSelect(t.id)} style={{ cursor:"pointer", accentColor:D.text, width:16, height:16 }} />
                 <SegmentedDateInput parts={editForm} onChange={p=>setEditForm(f=>({...f,...p}))} D={D} />
-                <input type="number" step="0.1" value={editForm.rr} onChange={e=>setEditForm(f=>({...f,rr:e.target.value}))} style={{ ...numStyle(), height:32, padding:"6px 10px", fontSize:12 }} />
-                <input type="number" value={editForm.pnl} onChange={e=>setEditForm(f=>({...f,pnl:e.target.value}))} style={{ ...numStyle(), height:32, padding:"6px 10px", fontSize:12 }} />
+                <input type="number" step="0.1" value={editForm.rr} onChange={e=>setEditForm(f=>({...f,rr:e.target.value}))} style={{ ...numStyle(), padding:"6px 10px", fontSize:12 }} />
+                <input type="number" value={editForm.pnl} onChange={e=>setEditForm(f=>({...f,pnl:e.target.value}))} style={{ ...numStyle(), padding:"6px 10px", fontSize:12 }} />
                 <div style={{ fontSize:11, fontWeight:700, color:outcomeColor(parseFloat(editForm.pnl)), textTransform:"uppercase", letterSpacing:"0.05em" }}>{outcomeLabel(parseFloat(editForm.pnl))}</div>
                 <div style={{ display:"flex", gap:6 }}>
-                  <button onClick={saveEdit} style={{ padding:"4px 10px", background:D.text, color:D.bg, border:"none", borderRadius:D.radiusSm ?? 6, cursor:"pointer", fontSize:11, fontWeight:700 }}>Save</button>
-                  <button onClick={()=>setEditId(null)} style={{ padding:"4px 10px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:D.radiusSm ?? 6, cursor:"pointer", fontSize:11, color:D.textMuted }}>✕</button>
+                  <button onClick={saveEdit} style={{ padding:"4px 10px", background:D.text, color:D.bg, border:"none", borderRadius:6, cursor:"pointer", fontSize:11, fontWeight:700 }}>Save</button>
+                  <button onClick={()=>setEditId(null)} style={{ padding:"4px 10px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:6, cursor:"pointer", fontSize:11, color:D.textMuted }}>✕</button>
                 </div>
               </div>
             );
@@ -278,7 +274,7 @@ export default function DataEntry({ trades, onTradesChange, design }) {
                   {t.pnl>=0?`+$${t.pnl.toLocaleString()}`:`-$${Math.abs(t.pnl).toLocaleString()}`}
                 </div>
                 <div>
-                  <span style={{ display:"inline-block", padding:"4px 12px", borderRadius:D.radiusSm ?? 6, fontSize:10, fontWeight:700, letterSpacing:"0.05em", background:`${color}15`, color, border:`1px solid ${color}30` }}>
+                  <span style={{ display:"inline-block", padding:"4px 12px", borderRadius:20, fontSize:10, fontWeight:700, letterSpacing:"0.05em", background:`${color}15`, color, border:`1px solid ${color}30` }}>
                     {outcomeLabel(t.pnl)}
                   </span>
                 </div>

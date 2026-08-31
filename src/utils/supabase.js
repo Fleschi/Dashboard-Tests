@@ -83,41 +83,6 @@ export async function updateTrade(id, trade) {
   if (error) throw error;
 }
 
-// ── Forward Trades ────────────────────────────────────────────────────────────
-
-export async function loadForwardTrades() {
-  const { data, error } = await supabase
-    .from("forward_trades")
-    .select("*")
-    .order("date", { ascending: false });
-  if (error) throw error;
-  return data;
-}
-
-export async function saveForwardTrade(trade) {
-  const { data, error } = await supabase.from("forward_trades").insert([{
-    date: trade.date,
-    pnl: trade.pnl,
-    rr: trade.rr,
-  }]).select();
-  if (error) throw error;
-  return data[0];
-}
-
-export async function updateForwardTrade(id, trade) {
-  const { error } = await supabase.from("forward_trades").update({
-    date: trade.date,
-    pnl: trade.pnl,
-    rr: trade.rr,
-  }).eq("id", id);
-  if (error) throw error;
-}
-
-export async function deleteForwardTrade(id) {
-  const { error } = await supabase.from("forward_trades").delete().eq("id", id);
-  if (error) throw error;
-}
-
 // ── Notebook Entries ──────────────────────────────────────────────────────────
 
 export async function loadNotebookEntries() {
@@ -138,14 +103,9 @@ export async function saveNotebookEntry(entry) {
       draws_on_liquidity:      entry.draws_on_liquidity,
       screenshot_htf_url:      entry.screenshot_htf_url      || null,
       screenshot_tod_url:      entry.screenshot_tod_url      || null,
-      screenshot_exec_url:     entry.screenshot_exec_url     || null,
       screenshot_my_trade_url: entry.screenshot_my_trade_url || null,
       went_good:               entry.went_good,
-      went_wrong:              entry.went_wrong,
       key_takeaway:            entry.key_takeaway,
-      type:                    entry.type,
-      along_htf:               entry.along_htf,
-      outcome:                 entry.outcome || null,
     }])
     .select()
     .single();
@@ -159,15 +119,10 @@ export async function updateNotebookEntry(id, entry) {
     daily_bias:            entry.daily_bias,
     draws_on_liquidity:    entry.draws_on_liquidity,
     went_good:             entry.went_good,
-    went_wrong:            entry.went_wrong,
     key_takeaway:          entry.key_takeaway,
-    type:                  entry.type,
-    along_htf:             entry.along_htf,
-    outcome:               entry.outcome || null,
   };
   if (entry.screenshot_htf_url      !== undefined) updates.screenshot_htf_url      = entry.screenshot_htf_url;
   if (entry.screenshot_tod_url      !== undefined) updates.screenshot_tod_url      = entry.screenshot_tod_url;
-  if (entry.screenshot_exec_url     !== undefined) updates.screenshot_exec_url     = entry.screenshot_exec_url;
   if (entry.screenshot_my_trade_url !== undefined) updates.screenshot_my_trade_url = entry.screenshot_my_trade_url;
 
   const { data, error } = await supabase

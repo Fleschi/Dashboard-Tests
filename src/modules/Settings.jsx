@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DEFAULT_DESIGN, BACKGROUNDS } from "../constants.jsx";
+import { DEFAULT_DESIGN, BACKGROUNDS, THEMES } from "../constants.jsx";
 
 const STORAGE_KEY = "trading_dashboard_design";
 
@@ -23,9 +23,9 @@ export default function Settings({ design, onChange }) {
 
   useEffect(() => { saveDesign(design); }, [design]);
 
-  const inp = { padding: "8px 14px", background: D.bg, border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6, color: D.text, fontSize: 13, fontFamily: "monospace", width: "100%", outline: "none" };
+  const inp = { padding: "8px 14px", background: D.bg, border: `1px solid ${D.border}`, borderRadius: 8, color: D.text, fontSize: 13, fontFamily: "monospace", width: "100%", outline: "none" };
   const lbl = { fontSize: 11, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 6, fontWeight: 600 };
-  const reset = () => { onChange(DEFAULT_DESIGN); saveDesign(DEFAULT_DESIGN); };
+  const reset = () => onChange(DEFAULT_DESIGN);
 
   const visibleBgs = BACKGROUNDS.filter(b => ALLOWED_BG.includes(b.id));
 
@@ -33,15 +33,39 @@ export default function Settings({ design, onChange }) {
     <div style={{ display: "flex", justifyContent: "center" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: 24, width: "min(720px, 100%)" }}>
 
+        {/* Theme */}
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
+          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 20, color: D.text }}>Theme</div>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            {THEMES.map(t => {
+              const isActive = D.themeId === t.themeId;
+              return (
+                <button key={t.themeId} onClick={() => onChange({ ...t })}
+                  style={{ width: 150, borderRadius: 12, cursor: "pointer", overflow: "hidden", border: `2px solid ${isActive ? D.blue : D.border}`, padding: 0, boxShadow: isActive ? `0 0 0 1px ${D.blue}` : "none", transition: "all 0.15s" }}>
+                  <div style={{ height: 64, background: t.bg, display: "flex", alignItems: "flex-end", gap: 4, padding: 10 }}>
+                    <div style={{ flex: 1, height: "40%", background: t.border, borderRadius: 2 }} />
+                    <div style={{ flex: 1, height: "70%", background: t.blue, borderRadius: 2 }} />
+                    <div style={{ flex: 1, height: "55%", background: t.border, borderRadius: 2 }} />
+                  </div>
+                  <div style={{ padding: "8px 10px", textAlign: "left", background: t.card, borderTop: `1px solid ${t.border}` }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: t.text }}>{t.label}</div>
+                    <div style={{ fontSize: 10, color: t.textMuted }}>{t.description}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Background Pattern */}
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: 28 }}>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
           <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 20, color: D.text }}>Background</div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
             {visibleBgs.map(b => {
               const isActive = (D.background || "none") === b.id;
               return (
                 <button key={b.id} onClick={() => onChange({ ...D, background: b.id })}
-                  style={{ width: 90, height: 64, borderRadius: D.radiusSm ?? 6, cursor: "pointer", overflow: "hidden", border: `2px solid ${isActive ? D.blue : D.border}`, padding: 0, position: "relative", boxShadow: isActive ? `0 0 0 1px ${D.blue}` : "none", transition: "all 0.15s" }}>
+                  style={{ width: 90, height: 64, borderRadius: 10, cursor: "pointer", overflow: "hidden", border: `2px solid ${isActive ? D.blue : D.border}`, padding: 0, position: "relative", boxShadow: isActive ? `0 0 0 1px ${D.blue}` : "none", transition: "all 0.15s" }}>
                   <div style={{ position: "absolute", inset: 0, ...b.preview(D.bg, D.radialColor || "#a78bfa") }} />
                   <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 5, background: "linear-gradient(transparent, rgba(0,0,0,0.65))" }}>
                     <span style={{ fontSize: 9, fontWeight: 600, color: "#fff", letterSpacing: "0.04em" }}>{b.label}</span>
@@ -57,7 +81,7 @@ export default function Settings({ design, onChange }) {
               <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                 <input type="color" value={D.radialColor || "#a78bfa"}
                   onChange={e => onChange({ ...D, radialColor: e.target.value })}
-                  style={{ width: 40, height: 40, border: "none", borderRadius: D.radiusSm ?? 6, cursor: "pointer", background: "none", padding: 0 }} />
+                  style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
                 <input type="text" value={D.radialColor || "#a78bfa"}
                   onChange={e => onChange({ ...D, radialColor: e.target.value })}
                   style={{ ...inp, width: 140 }} />
@@ -82,7 +106,7 @@ export default function Settings({ design, onChange }) {
                   <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
                     <input type="color" value={D[colorKey] || defaultColor}
                       onChange={e => onChange({ ...D, [colorKey]: e.target.value })}
-                      style={{ width: 40, height: 40, border: "none", borderRadius: D.radiusSm ?? 6, cursor: "pointer", background: "none", padding: 0 }} />
+                      style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
                     <input type="text" value={D[colorKey] || defaultColor}
                       onChange={e => onChange({ ...D, [colorKey]: e.target.value })}
                       style={{ ...inp, width: 140 }} />
@@ -110,7 +134,7 @@ export default function Settings({ design, onChange }) {
                   <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
                     <input type="color" value={D[colorKey] || defaultColor}
                       onChange={e => onChange({ ...D, [colorKey]: e.target.value })}
-                      style={{ width: 36, height: 36, border: "none", borderRadius: D.radiusSm ?? 6, cursor: "pointer", background: "none", padding: 0 }} />
+                      style={{ width: 36, height: 36, border: "none", borderRadius: 6, cursor: "pointer", background: "none", padding: 0 }} />
                     <input type="text" value={D[colorKey] || defaultColor}
                       onChange={e => onChange({ ...D, [colorKey]: e.target.value })}
                       style={{ ...inp, fontSize: 11, padding: "6px 10px" }} />
@@ -127,7 +151,7 @@ export default function Settings({ design, onChange }) {
         </div>
 
         {/* Color Customization — single expanding card */}
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: 28 }}>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
           <button
             onClick={() => setShowColors(!showColors)}
             style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", background: "transparent", border: "none", cursor: "pointer", padding: 0, marginBottom: showColors ? 24 : 0 }}
@@ -154,7 +178,7 @@ export default function Settings({ design, onChange }) {
                       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                         <input type="color" value={D[key] || "#000000"}
                           onChange={e => onChange({ ...D, [key]: e.target.value, ...(key === "blue" ? { purple: e.target.value } : {}) })}
-                          style={{ width: 40, height: 40, border: "none", borderRadius: D.radiusSm ?? 6, cursor: "pointer", background: "none", padding: 0 }} />
+                          style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
                         <input type="text" value={D[key] || ""}
                           onChange={e => onChange({ ...D, [key]: e.target.value, ...(key === "blue" ? { purple: e.target.value } : {}) })}
                           style={inp} />
@@ -173,7 +197,7 @@ export default function Settings({ design, onChange }) {
                       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                         <input type="color" value={D[key] || "#000000"}
                           onChange={e => onChange({ ...D, [key]: e.target.value })}
-                          style={{ width: 40, height: 40, border: "none", borderRadius: D.radiusSm ?? 6, cursor: "pointer", background: "none", padding: 0 }} />
+                          style={{ width: 40, height: 40, border: "none", borderRadius: 8, cursor: "pointer", background: "none", padding: 0 }} />
                         <input type="text" value={D[key] || ""}
                           onChange={e => onChange({ ...D, [key]: e.target.value })}
                           style={inp} />
@@ -186,7 +210,7 @@ export default function Settings({ design, onChange }) {
           )}
         </div>
 
-        <button onClick={reset} style={{ padding: "10px 24px", background: "transparent", border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6, color: D.textMuted, cursor: "pointer", fontSize: 13, alignSelf: "flex-start" }}>
+        <button onClick={reset} style={{ padding: "10px 24px", background: "transparent", border: `1px solid ${D.border}`, borderRadius: 10, color: D.textMuted, cursor: "pointer", fontSize: 13, alignSelf: "flex-start" }}>
           Reset to default
         </button>
       </div>

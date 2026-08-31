@@ -50,23 +50,23 @@ const emptyForm = () => ({
 
 // ─── Small UI ─────────────────────────────────────────────────────────────────
 
-function SelBtn({ label, active, color, onClick, D }) {
+function SelBtn({ label, active, color, onClick }) {
   return (
     <button type="button" onClick={onClick} style={{
-      padding: "7px 16px", borderRadius: D.radiusSm ?? 6,
-      border: `1px solid ${active ? color : D.border}`,
+      padding: "6px 16px", borderRadius: 8,
+      border: `1px solid ${active ? color : "transparent"}`,
       background: active ? `${color}18` : "transparent",
-      color: active ? color : D.textMuted,
-      fontSize: 13, cursor: "pointer", fontWeight: active ? 600 : 500,
+      color: active ? color : "#525252",
+      fontSize: 13, cursor: "pointer", fontWeight: active ? 600 : 400,
       transition: "all 0.15s",
     }}>{label}</button>
   );
 }
 
-function Field({ label, children, D }) {
+function Field({ label, children }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-      {label && <label style={{ fontSize: 10, color: D.textMuted, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</label>}
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {label && <label style={{ fontSize: 11, color: "#525252", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</label>}
       {children}
     </div>
   );
@@ -76,8 +76,8 @@ function TextInput({ value, onChange, style = {}, placeholder, D }) {
   return (
     <input value={value} onChange={onChange} placeholder={placeholder} style={{
       background: D.bg, border: `1px solid ${D.border}`,
-      borderRadius: D.radiusSm ?? 6, color: D.text, padding: "9px 12px",
-      fontSize: 13, outline: "none", width: "100%", boxSizing: "border-box", height: 38, ...style,
+      borderRadius: 8, color: D.text, padding: "8px 12px",
+      fontSize: 13, outline: "none", width: "100%", boxSizing: "border-box", ...style,
     }} />
   );
 }
@@ -86,9 +86,9 @@ function Textarea({ value, onChange, D, rows = 4 }) {
   return (
     <textarea value={value} onChange={onChange} rows={rows} style={{
       background: D.bg, border: `1px solid ${D.border}`,
-      borderRadius: D.radiusSm ?? 6, color: D.text, padding: "10px 12px",
+      borderRadius: 8, color: D.text, padding: "8px 12px",
       fontSize: 13, outline: "none", resize: "vertical",
-      width: "100%", boxSizing: "border-box", lineHeight: 1.5,
+      width: "100%", boxSizing: "border-box",
     }} />
   );
 }
@@ -103,23 +103,22 @@ function AttachButton({ label, file, existingUrl, onFile, onClear, D, uploading 
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {!displaySrc ? (
         <button type="button" onClick={() => ref.current.click()} style={{
-          height: 38, padding: "0 16px", borderRadius: D.radiusSm ?? 6, border: `1px dashed ${D.border}`,
+          padding: "7px 16px", borderRadius: 8, border: `1px solid ${D.border}`,
           background: "transparent", color: D.textMuted, fontSize: 12, cursor: "pointer",
-          display: "flex", alignItems: "center", gap: 8, width: "100%", justifyContent: "center",
+          display: "flex", alignItems: "center", gap: 6, width: "fit-content",
         }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
-          {label}
+          <span style={{ fontSize: 14 }}>📎</span> {label}
         </button>
       ) : (
         <div style={{ position: "relative", display: "inline-block" }}>
           <img src={displaySrc} alt={label}
-            style={{ maxWidth: "100%", maxHeight: 220, borderRadius: D.radiusSm ?? 6, border: `1px solid ${D.border}`, display: "block", cursor: "pointer", objectFit: "contain" }}
+            style={{ maxWidth: "100%", maxHeight: 220, borderRadius: 8, border: `1px solid ${D.border}`, display: "block", cursor: "pointer", objectFit: "contain" }}
             onClick={() => window.open(displaySrc, "_blank")}
           />
           <span style={{ position: "absolute", bottom: 6, left: 6, background: isLocal ? "rgba(255,180,0,0.85)" : "rgba(0,180,80,0.85)", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 4 }}>
             {isLocal ? "New (unsaved)" : "Saved"}
           </span>
-          <button type="button" onClick={() => ref.current.click()} style={{ position: "absolute", top: 6, left: 6, background: "rgba(0,0,0,0.65)", border: "none", borderRadius: 4, color: "#fff", cursor: "pointer", fontSize: 10, padding: "3px 8px" }}>Replace</button>
+          <button type="button" onClick={() => ref.current.click()} style={{ position: "absolute", top: 6, left: 6, background: "rgba(0,0,0,0.65)", border: "none", borderRadius: 6, color: "#fff", cursor: "pointer", fontSize: 10, padding: "3px 8px" }}>Replace</button>
           <button type="button" onClick={onClear} style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,0.75)", border: "none", borderRadius: "50%", width: 24, height: 24, color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
         </div>
       )}
@@ -138,19 +137,19 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
   const biasColor = bias === "Bullish" ? D.green : bias === "Bearish" ? D.red : D.textMuted;
 
   return (
-    <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
+    <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, paddingBottom: 16, borderBottom: `1px solid ${D.border}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <span style={{ fontSize: 14, color: D.text, fontFamily: "monospace", fontWeight: 600 }}>{entry.time_entered}</span>
           {bias && (
-            <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: D.radiusSm ?? 6, background: `${biasColor}18`, color: biasColor, border: `1px solid ${biasColor}30` }}>{bias}</span>
+            <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 8, background: `${biasColor}18`, color: biasColor, border: `1px solid ${biasColor}30` }}>{bias}</span>
           )}
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={() => onEdit(entry)} style={{ background: "transparent", border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6, color: D.text, cursor: "pointer", fontSize: 12, padding: "6px 14px", fontWeight: 500 }}>Edit</button>
-          <button onClick={async () => { setDeleting(true); await onDelete(entry.id); }} disabled={deleting} style={{ background: "transparent", border: `1px solid ${D.red}30`, borderRadius: D.radiusSm ?? 6, color: D.red, cursor: "pointer", fontSize: 12, padding: "6px 14px", opacity: deleting ? 0.5 : 1, fontWeight: 500 }}>
+          <button onClick={() => onEdit(entry)} style={{ background: "transparent", border: `1px solid ${D.border}`, borderRadius: 8, color: D.text, cursor: "pointer", fontSize: 12, padding: "6px 14px", fontWeight: 500 }}>Edit</button>
+          <button onClick={async () => { setDeleting(true); await onDelete(entry.id); }} disabled={deleting} style={{ background: "transparent", border: `1px solid ${D.red}30`, borderRadius: 8, color: D.red, cursor: "pointer", fontSize: 12, padding: "6px 14px", opacity: deleting ? 0.5 : 1, fontWeight: 500 }}>
             {deleting ? "Deleting…" : "Delete"}
           </button>
         </div>
@@ -171,7 +170,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
             <div>
               <div style={{ fontSize: 11, color: D.textMuted, marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>Daily Bias</div>
               <img src={entry.screenshot_htf_url} alt="Daily Bias"
-                style={{ width: "100%", borderRadius: D.radius ?? 10, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
+                style={{ width: "100%", borderRadius: 12, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
                 onClick={() => window.open(entry.screenshot_htf_url, "_blank")}
                 onError={e => { e.target.style.display = "none"; }} />
             </div>
@@ -180,7 +179,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
             <div>
               <div style={{ fontSize: 11, color: D.textMuted, marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>Trade of the Day</div>
               <img src={entry.screenshot_tod_url} alt="TOD"
-                style={{ width: "100%", borderRadius: D.radius ?? 10, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
+                style={{ width: "100%", borderRadius: 12, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
                 onClick={() => window.open(entry.screenshot_tod_url, "_blank")}
                 onError={e => { e.target.style.display = "none"; }} />
             </div>
@@ -193,7 +192,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
         <div>
           <div style={{ fontSize: 11, color: D.textMuted, marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em" }}>My Trade</div>
           <img src={entry.screenshot_my_trade_url} alt="My Trade"
-            style={{ width: "100%", borderRadius: D.radius ?? 10, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
+            style={{ width: "100%", borderRadius: 12, border: `1px solid ${D.border}`, cursor: "pointer", display: "block" }}
             onClick={() => window.open(entry.screenshot_my_trade_url, "_blank")}
             onError={e => { e.target.style.display = "none"; }} />
         </div>
@@ -209,7 +208,7 @@ function EntryCard({ entry, D, onDelete, onEdit }) {
 
       {/* Key Takeaway */}
       {entry.key_takeaway && (
-        <div style={{ background: `${D.blue}08`, border: `1px solid ${D.blue}25`, borderRadius: D.radius ?? 10, padding: 18 }}>
+        <div style={{ background: `${D.blue}08`, border: `1px solid ${D.blue}25`, borderRadius: 12, padding: 18 }}>
           <div style={{ fontSize: 11, color: D.blue, marginBottom: 8, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>Key Takeaway</div>
           <div style={{ fontSize: 14, color: D.text, lineHeight: 1.6, fontWeight: 500 }}>{formatBulletPoints(entry.key_takeaway)}</div>
         </div>
@@ -370,9 +369,9 @@ export default function TradeNotebook({ design: D }) {
 
       {/* Undo */}
       {deletedEntry && (
-        <div style={{ position: "fixed", top: 20, left: 20, zIndex: 1000, background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: "12px 20px", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
+        <div style={{ position: "fixed", top: 20, left: 20, zIndex: 1000, background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: "12px 20px", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
           <span style={{ fontSize: 13, color: D.text }}>Entry deleted</span>
-          <button onClick={handleUndo} style={{ background: D.blue, color: "#fff", border: "none", borderRadius: D.radiusSm ?? 6, padding: "6px 14px", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>Undo</button>
+          <button onClick={handleUndo} style={{ background: D.blue, color: "#fff", border: "none", borderRadius: 8, padding: "6px 14px", cursor: "pointer", fontSize: 12, fontWeight: 600 }}>Undo</button>
           <button onClick={() => { if (undoTimeout) clearTimeout(undoTimeout); setDeletedEntry(null); }} style={{ background: "transparent", color: D.textMuted, border: "none", cursor: "pointer", fontSize: 16, padding: "0 4px" }}>×</button>
         </div>
       )}
@@ -382,44 +381,38 @@ export default function TradeNotebook({ design: D }) {
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontSize: 12, color: D.textMuted }}>{entries.length} entries</span>
           {entries.length > 0 && (
-            <button onClick={() => exportToExcel(entries)} style={{ padding: "6px 14px", borderRadius: D.radiusSm ?? 6, border: `1px solid ${D.border}`, background: "transparent", color: D.textMuted, fontSize: 12, cursor: "pointer", fontWeight: 500 }}>
+            <button onClick={() => exportToExcel(entries)} style={{ padding: "6px 14px", borderRadius: 8, border: `1px solid ${D.border}`, background: "transparent", color: D.textMuted, fontSize: 12, cursor: "pointer", fontWeight: 500 }}>
               Export Excel
             </button>
           )}
         </div>
         <button
           onClick={() => { setShowForm(s => !s); if (showForm) { setEditingId(null); setForm(emptyForm()); } setError(null); }}
-          style={{ padding: "9px 20px", borderRadius: D.radiusSm ?? 6, border: `1px solid ${D.border}`, background: "transparent", color: showForm ? D.textMuted : D.text, fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+          style={{ padding: "9px 20px", borderRadius: 10, border: `1px solid ${D.border}`, background: "transparent", color: showForm ? D.textMuted : D.text, fontSize: 13, fontWeight: 600, cursor: "pointer" }}
         >
           {showForm ? "Cancel" : "+ New Entry"}
         </button>
       </div>
 
       {error && (
-        <div style={{ background: `${D.red}12`, border: `1px solid ${D.red}30`, borderRadius: D.radius ?? 10, padding: "10px 16px", fontSize: 12, color: D.red }}>{error}</div>
+        <div style={{ background: `${D.red}12`, border: `1px solid ${D.red}30`, borderRadius: 10, padding: "10px 16px", fontSize: 12, color: D.red }}>{error}</div>
       )}
 
       {/* Form */}
       {showForm && (
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, overflow: "hidden" }}>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
 
-          <div style={{ padding: "16px 24px", fontSize: 14, fontWeight: 600, color: D.text }}>
-            {editingId ? "Edit Entry" : "New Entry"}
-          </div>
+          {/* Date */}
+          <Field label="Date & Time">
+            <TextInput value={form.datetime} onChange={handleDatetime} D={D} placeholder="DD/MM/YY HH:MM" style={{ maxWidth: 180, fontFamily: "monospace" }} />
+          </Field>
 
-          {/* Section: Date */}
-          <div style={{ borderTop: `1px solid ${D.border}`, padding: "20px 24px" }}>
-            <Field label="Date & Time" D={D}>
-              <TextInput value={form.datetime} onChange={handleDatetime} D={D} placeholder="DD/MM/YY HH:MM" style={{ maxWidth: 200, fontFamily: "monospace" }} />
-            </Field>
-          </div>
-
-          {/* Section: Bias + charts */}
-          <div style={{ borderTop: `1px solid ${D.border}`, padding: "20px 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-            <Field label="Daily Bias" D={D}>
+          {/* Daily Bias */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <Field label="Daily Bias">
               <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                 {["Bullish", "Bearish"].map(t => (
-                  <SelBtn key={t} label={t} active={form.dailyBias === t} color={t === "Bullish" ? D.green : D.red} onClick={() => set("dailyBias", t)} D={D} />
+                  <SelBtn key={t} label={t} active={form.dailyBias === t} color={t === "Bullish" ? D.green : D.red} onClick={() => set("dailyBias", t)} />
                 ))}
               </div>
               <AttachButton label="Attach chart" file={form.fileDailyBias} existingUrl={form.existingDailyBiasUrl}
@@ -427,43 +420,39 @@ export default function TradeNotebook({ design: D }) {
                 uploading={uploadingSlot === "Daily Bias"} D={D} />
             </Field>
 
-            <Field label="Trade of the Day" D={D}>
+            {/* Trade of the Day */}
+            <Field label="Trade of the Day">
               <AttachButton label="Attach chart" file={form.fileTOD} existingUrl={form.existingTODUrl}
                 onFile={f => set("fileTOD", f)} onClear={() => { set("fileTOD", null); set("existingTODUrl", null); }}
                 uploading={uploadingSlot === "Trade of the Day"} D={D} />
             </Field>
           </div>
 
-          {/* Section: Draws on Liquidity */}
-          <div style={{ borderTop: `1px solid ${D.border}`, padding: "20px 24px" }}>
-            <Field label="Draws on Liquidity" D={D}>
-              <Textarea value={form.drawsOnLiquidity} onChange={e => set("drawsOnLiquidity", e.target.value)} D={D} rows={3} />
-            </Field>
-          </div>
+          {/* Draws on Liquidity */}
+          <Field label="Draws on Liquidity">
+            <Textarea value={form.drawsOnLiquidity} onChange={e => set("drawsOnLiquidity", e.target.value)} D={D} rows={3} />
+          </Field>
 
-          {/* Section: My Trade */}
-          <div style={{ borderTop: `1px solid ${D.border}`, padding: "20px 24px" }}>
-            <Field label="My Trade (Execution)" D={D}>
-              <AttachButton label="Attach chart" file={form.fileMyTrade} existingUrl={form.existingMyTradeUrl}
-                onFile={f => set("fileMyTrade", f)} onClear={() => { set("fileMyTrade", null); set("existingMyTradeUrl", null); }}
-                uploading={uploadingSlot === "My Trade"} D={D} />
-            </Field>
-          </div>
+          {/* My Trade */}
+          <Field label="My Trade (Execution)">
+            <AttachButton label="Attach chart" file={form.fileMyTrade} existingUrl={form.existingMyTradeUrl}
+              onFile={f => set("fileMyTrade", f)} onClear={() => { set("fileMyTrade", null); set("existingMyTradeUrl", null); }}
+              uploading={uploadingSlot === "My Trade"} D={D} />
+          </Field>
 
-          {/* Section: Notes + Takeaway */}
-          <div style={{ borderTop: `1px solid ${D.border}`, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 20 }}>
-            <Field label="Notes" D={D}>
-              <Textarea value={form.notes} onChange={e => set("notes", e.target.value)} D={D} rows={4} />
-            </Field>
-            <Field label="Key Takeaway / Learning (optional)" D={D}>
-              <Textarea value={form.keyTakeaway} onChange={e => set("keyTakeaway", e.target.value)} D={D} rows={3} />
-            </Field>
-          </div>
+          {/* Notes */}
+          <Field label="Notes">
+            <Textarea value={form.notes} onChange={e => set("notes", e.target.value)} D={D} rows={4} />
+          </Field>
 
-          {/* Section: Submit */}
-          <div style={{ borderTop: `1px solid ${D.border}`, padding: "16px 24px", display: "flex", alignItems: "center", gap: 12, background: `${D.bg}80` }}>
+          {/* Key Takeaway (optional) */}
+          <Field label="Key Takeaway / Learning (optional)">
+            <Textarea value={form.keyTakeaway} onChange={e => set("keyTakeaway", e.target.value)} D={D} rows={3} />
+          </Field>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button onClick={submit} disabled={!form.datetime || saving} style={{
-              padding: "10px 28px", borderRadius: D.radiusSm ?? 6, border: `1px solid ${D.border}`,
+              padding: "10px 28px", borderRadius: 10, border: `1px solid ${D.border}`,
               background: form.datetime && !saving ? D.text : "transparent",
               color: form.datetime && !saving ? D.bg : D.textMuted,
               fontSize: 14, fontWeight: 600, cursor: form.datetime && !saving ? "pointer" : "default",
@@ -478,7 +467,7 @@ export default function TradeNotebook({ design: D }) {
       )}
 
       {entries.length === 0 && !showForm && (
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: 32, textAlign: "center", color: D.textMuted, fontSize: 13 }}>No entries yet.</div>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 14, padding: 32, textAlign: "center", color: D.textMuted, fontSize: 13 }}>No entries yet.</div>
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

@@ -25,7 +25,7 @@ export function EquityCurve({ trades, equityCurve: prebuilt, D }) {
     if (!active || !payload?.length) return null;
     const d = payload[0].payload;
     return (
-      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6, padding: "8px 12px", fontSize: 12 }}>
+      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 12 }}>
         <div style={{ color: D.textMuted, marginBottom: 2 }}>Trade #{d.index}</div>
         <div style={{ color: accent, fontWeight: 600 }}>{fmt(d.equity)}</div>
       </div>
@@ -116,7 +116,7 @@ function YearModal({ trades, initialYear, initialMonth, onSelectMonth, onClose, 
         onClick={e => e.stopPropagation()}
         style={{
           background: D.card, border: `1px solid ${D.border}`,
-          borderRadius: D.radius ?? 10, padding: 28, width: 580, maxWidth: "calc(100vw - 48px)",
+          borderRadius: 16, padding: 28, width: 580, maxWidth: "calc(100vw - 48px)",
           boxShadow: "0 24px 64px rgba(0,0,0,0.5)",
         }}
       >
@@ -140,12 +140,12 @@ function YearModal({ trades, initialYear, initialMonth, onSelectMonth, onClose, 
           </div>
           <button
             onClick={onClose}
-            style={{ background: "transparent", border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6, color: D.textMuted, cursor: "pointer", fontSize: 16, padding: "4px 10px", lineHeight: 1 }}
+            style={{ background: "transparent", border: `1px solid ${D.border}`, borderRadius: 8, color: D.textMuted, cursor: "pointer", fontSize: 16, padding: "4px 10px", lineHeight: 1 }}
           >✕</button>
         </div>
 
         {/* Summary strip */}
-        <div style={{ display: "flex", gap: 0, marginBottom: 24, borderRadius: D.radius ?? 10, overflow: "hidden", border: `1px solid ${D.border}` }}>
+        <div style={{ display: "flex", gap: 0, marginBottom: 24, borderRadius: 10, overflow: "hidden", border: `1px solid ${D.border}` }}>
           {[
             ["Year PnL",     fmt(yearPnl),    yearPnl >= 0 ? D.green : D.red],
             ["Green Months", greenMonths,      D.green],
@@ -176,7 +176,7 @@ function YearModal({ trades, initialYear, initialMonth, onSelectMonth, onClose, 
                 style={{
                   background: selected ? `${D.blue}20` : bg,
                   border: `1px solid ${selected ? D.blue : m.active ? col + "35" : D.border}`,
-                  borderRadius: D.radiusSm ?? 6, padding: "12px 14px",
+                  borderRadius: 10, padding: "12px 14px",
                   cursor: "pointer",
                   transition: "border 0.15s, background 0.15s",
                   minHeight: 100,
@@ -305,7 +305,7 @@ export function CalendarView({ trades, D }) {
             const color = data ? (data.pnl > 0 ? D.green : data.pnl < 0 ? D.red : D.yellow) : D.textMuted;
             return (
               <div key={day} title={data ? `${data.count} trades · ${fmt(data.pnl)}` : ""}
-                style={{ background: bg, border: `1px solid ${isToday ? D.blue : data ? color + "35" : D.border}`, borderRadius: D.radiusSm ?? 6, padding: "5px 4px", minHeight: 75 }}>
+                style={{ background: bg, border: `1px solid ${isToday ? D.blue : data ? color + "35" : D.border}`, borderRadius: 6, padding: "5px 4px", minHeight: 75 }}>
                 <div style={{ fontSize: 10, fontWeight: isToday ? 700 : 400, color: isToday ? D.blue : D.textMuted, marginBottom: 2 }}>{day}</div>
                 {data && (
                   <>
@@ -340,6 +340,6 @@ export function CalendarView({ trades, D }) {
 
 const navBtnStyle = (D) => ({
   padding: "4px 10px", background: "transparent",
-  border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6,
+  border: `1px solid ${D.border}`, borderRadius: 6,
   color: D.textMuted, cursor: "pointer", fontSize: 13,
 });

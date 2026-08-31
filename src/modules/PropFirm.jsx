@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 
 import { loadPropFirms, savePropFirm, updatePropFirm, deletePropFirm } from "../utils/supabase";
-import { fitStudentT, sampleStudentT } from "../utils/calculations";
+import { fitStudentT, sampleStudentT, fmtPct } from "../utils/calculations";
 
 const DEFAULT_FIRM = (id) => ({
   id, name: `Prop Firm ${id}`,
@@ -140,7 +140,7 @@ function EditModal({ firm, onUpdate, onClose, D }) {
   const [f, setF] = useState(firm);
   const upd = (key, val) => setF(prev => ({ ...prev, [key]: val }));
 
-  const inputStyle = { padding: "6px 10px", background: D.bg, border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6, color: D.text, fontSize: 13, fontFamily: "monospace", width: "100%" };
+  const inputStyle = { padding: "6px 10px", background: D.bg, border: `1px solid ${D.border}`, borderRadius: 6, color: D.text, fontSize: 13, fontFamily: "monospace", width: "100%" };
   const labelStyle = { fontSize: 11, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", display: "block", marginBottom: 4 };
 
   return (
@@ -148,7 +148,7 @@ function EditModal({ firm, onUpdate, onClose, D }) {
     <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
 
       {/* Modal */}
-      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, width: "min(780px, 95vw)", maxHeight: "85vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, width: "min(780px, 95vw)", maxHeight: "85vh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", borderBottom: `1px solid ${D.border}`, flexShrink: 0 }}>
@@ -189,7 +189,7 @@ function EditModal({ firm, onUpdate, onClose, D }) {
               <label style={labelStyle}>Cost Model</label>
               <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
                 {[["one_time", "One-time fee"], ["subscription", "Monthly fee"]].map(([val, lbl]) => (
-                  <button key={val} onClick={() => upd("costModel", val)} style={{ flex: 1, padding: "6px 0", borderRadius: D.radiusSm ?? 6, cursor: "pointer", fontSize: 12, border: `1px solid ${f.costModel === val ? D.blue : D.border}`, background: f.costModel === val ? `${D.blue}18` : "transparent", color: f.costModel === val ? D.blue : D.textMuted }}>
+                  <button key={val} onClick={() => upd("costModel", val)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, cursor: "pointer", fontSize: 12, border: `1px solid ${f.costModel === val ? D.blue : D.border}`, background: f.costModel === val ? `${D.blue}18` : "transparent", color: f.costModel === val ? D.blue : D.textMuted }}>
                     {lbl}
                   </button>
                 ))}
@@ -247,8 +247,8 @@ function EditModal({ firm, onUpdate, onClose, D }) {
 
         {/* Footer */}
         <div style={{ padding: "16px 24px", borderTop: `1px solid ${D.border}`, display: "flex", justifyContent: "flex-end", gap: 10, flexShrink: 0 }}>
-          <button onClick={onClose} style={{ padding: "8px 18px", background: "transparent", border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6, color: D.textMuted, cursor: "pointer", fontSize: 13 }}>Cancel</button>
-          <button onClick={() => { onUpdate(f); onClose(); }} style={{ padding: "8px 18px", background: D.text, border: "none", borderRadius: D.radiusSm ?? 6, color: D.bg, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>Save</button>
+          <button onClick={onClose} style={{ padding: "8px 18px", background: "transparent", border: `1px solid ${D.border}`, borderRadius: 8, color: D.textMuted, cursor: "pointer", fontSize: 13 }}>Cancel</button>
+          <button onClick={() => { onUpdate(f); onClose(); }} style={{ padding: "8px 18px", background: D.text, border: "none", borderRadius: 8, color: D.bg, cursor: "pointer", fontSize: 13, fontWeight: 600 }}>Save</button>
         </div>
       </div>
     </div>
@@ -312,10 +312,7 @@ export default function PropFirm({ stats, design }) {
   if (loading) return <div style={{ color: D.textMuted, padding: 40, textAlign: "center" }}>Loading...</div>;
 
   const fmtUSD = n => (!n && n !== 0) ? "—" : n >= 0 ? `+$${Math.round(n).toLocaleString()}` : `-$${Math.abs(Math.round(n)).toLocaleString()}`;
-  const fmtPct = n => `${(n * 100).toFixed(1)}%`;
   const fmtD   = n => n ? `${n.toFixed(0)}d` : "—";
-
-
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -335,19 +332,19 @@ export default function PropFirm({ stats, design }) {
           {rawTrades.length} trades · 2,000 runs
           {saving && <span style={{ color: D.textMuted, marginLeft: 10 }}>saving...</span>}
         </div>
-        <button onClick={addFirm} style={{ padding: "8px 18px", background: "transparent", border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6, color: D.text, fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
+        <button onClick={addFirm} style={{ padding: "8px 18px", background: "transparent", border: `1px solid ${D.border}`, borderRadius: 8, color: D.text, fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
           + Add Firm
         </button>
       </div>
 
       {rawTrades.length === 0 && (
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: 24, textAlign: "center", color: D.textMuted, fontSize: 13 }}>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 24, textAlign: "center", color: D.textMuted, fontSize: 13 }}>
           Add trades in the Data tab first to run simulations.
         </div>
       )}
 
       {/* Firm table — single grid so ALL dividers align perfectly */}
-      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, overflow: "hidden" }}>
+      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, overflow: "hidden" }}>
 
         {/* Header row */}
         <div style={{ display: "grid", gridTemplateColumns: "180px 1px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 80px", alignItems: "center", padding: "10px 20px", borderBottom: `1px solid ${D.border}`, background: D.bg }}>
@@ -384,8 +381,8 @@ export default function PropFirm({ stats, design }) {
               <div style={{ padding: "14px 0" }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: D.text, marginBottom: 5 }}>{firm.name}</div>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button onClick={() => setEditingFirm(firm)} style={{ fontSize: 10, padding: "2px 8px", borderRadius: D.radiusSm ?? 6, border: `1px solid ${D.border}`, background: "transparent", color: D.textMuted, cursor: "pointer" }}>Edit</button>
-                  {firms.length > 1 && <button onClick={() => removeFirm(i)} style={{ fontSize: 10, padding: "2px 8px", borderRadius: D.radiusSm ?? 6, border: `1px solid ${D.border}`, background: "transparent", color: D.red, cursor: "pointer" }}>Remove</button>}
+                  <button onClick={() => setEditingFirm(firm)} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 5, border: `1px solid ${D.border}`, background: "transparent", color: D.textMuted, cursor: "pointer" }}>Edit</button>
+                  {firms.length > 1 && <button onClick={() => removeFirm(i)} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 5, border: `1px solid ${D.border}`, background: "transparent", color: D.red, cursor: "pointer" }}>Remove</button>}
                 </div>
               </div>
 
@@ -419,7 +416,7 @@ export default function PropFirm({ stats, design }) {
               const r = results[i];
               if (!r) return null;
               return (
-                <div key={firm.id} style={{ background: D.card, borderRadius: D.radius ?? 10, padding: 16, borderTop: `2px solid ${D.border}` }}>
+                <div key={firm.id} style={{ background: D.card, borderRadius: 10, padding: 16, borderTop: `2px solid ${D.border}` }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: D.text, marginBottom: 10 }}>{firm.name}</div>
                   <div style={{ fontSize: 26, fontWeight: 700, color: r.passRate > 0.5 ? D.green : D.red }}>{fmtPct(r.passRate)}</div>
                   <div style={{ fontSize: 11, color: D.textMuted, marginBottom: 10 }}>pass rate</div>

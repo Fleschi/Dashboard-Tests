@@ -15,7 +15,6 @@ function calcTradesPerWeek(trades) {
   return Math.max(1, trades.length / Math.max(1, Object.keys(map).length));
 }
 
-// Neue $1k Histogram Funktion
 function buildHistogram1k(finals) {
   if (!finals?.length) return [];
 
@@ -54,7 +53,7 @@ function runMC(trades, simCount, weeks) {
   const tradesPerWeek = calcTradesPerWeek(trades);
   const tradesTotal = Math.min(Math.round(weeks * tradesPerWeek), 1500);
 
-  // Mindestens 20 Snapshots für gleichmäßige Verteilung, maximal alle 5 Trades ein Snapshot
+  // At least 20 snapshots for an even spread, at most one snapshot every 5 trades
   const minSnapshots = 20;
   const maxSnapshotInterval = Math.max(1, Math.floor(tradesTotal / minSnapshots));
   const snapshotInterval = Math.min(
@@ -62,8 +61,8 @@ function runMC(trades, simCount, weeks) {
     maxSnapshotInterval
   );
 
-  // Begrenze Simulationen basierend auf Trade Sample Size
-  // Bei kleiner Sample Size (< 500 Trades) weniger Sims um Überlappung zu vermeiden
+  // Cap simulations based on the trade sample size
+  // With a small sample (< 500 trades), run fewer sims to avoid excessive overlap
   const maxSimsBasedOnSampleSize = pnls.length < 500
     ? Math.min(simCount, 500)
     : simCount;
@@ -138,7 +137,7 @@ export default function MonteCarlo({ stats, design }) {
   }, [stats, simWeeks]);
 
   if (!stats?.rawTrades?.length) return (
-    <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: 40, textAlign: "center", color: D.textMuted }}>No trades yet.</div>
+    <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 40, textAlign: "center", color: D.textMuted }}>No trades yet.</div>
   );
 
   const fmtMC = n => Number(n) >= 0 ? `+$${Math.abs(Number(n)).toFixed(0)}` : `-$${Math.abs(Number(n)).toFixed(0)}`;
@@ -150,7 +149,7 @@ export default function MonteCarlo({ stats, design }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
       {/* ── Timeframe + Paths — single card ── */}
-      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: 24 }}>
+      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 24 }}>
         {/* Timeframe row */}
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
           <span style={{ fontSize: 12, color: D.textMuted, fontWeight: 500 }}>Timeframe</span>
@@ -159,7 +158,7 @@ export default function MonteCarlo({ stats, design }) {
               const active = simWeeks === w;
               return (
                 <button key={w} onClick={() => setSimWeeks(w)} style={{
-                  padding: "4px 14px", borderRadius: D.radiusSm ?? 6, cursor: "pointer", fontSize: 12,
+                  padding: "4px 14px", borderRadius: 6, cursor: "pointer", fontSize: 12,
                   border: `1px solid ${active ? D.blue : D.border}`,
                   background: active ? `${D.blue}15` : "transparent",
                   color: active ? D.text : D.textMuted,
@@ -189,7 +188,7 @@ export default function MonteCarlo({ stats, design }) {
 
       {/* ── Percentile table ── */}
       {mcResults && (
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: 24 }}>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 24 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 16 }}>Percentile Summary</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 10 }}>
             {[
@@ -200,7 +199,7 @@ export default function MonteCarlo({ stats, design }) {
               ["P90 (Best)",   percentile(mcFinals, 90)],
               ["Max DD P90",   -percentile(mcDDs, 90)],
             ].map(([label, value]) => (
-              <div key={label} style={{ background: D.bg, border: `1px solid ${D.border}`, borderRadius: D.radiusSm ?? 6, padding: "14px 16px" }}>
+              <div key={label} style={{ background: D.bg, border: `1px solid ${D.border}`, borderRadius: 10, padding: "14px 16px" }}>
                 <div style={{ fontSize: 10, color: D.textMuted, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
                 <div style={{ fontSize: 18, fontWeight: 700, color: value >= 0 ? D.green : D.red }}>{fmtMC(value)}</div>
               </div>
@@ -211,14 +210,14 @@ export default function MonteCarlo({ stats, design }) {
 
       {/* ── Histogram ── */}
       {mcResults && (
-        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: D.radius ?? 10, padding: 24 }}>
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 12, padding: 24 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 16 }}>Final PnL Distribution</div>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={hist}>
               <CartesianGrid strokeDasharray="3 3" stroke={D.border} vertical={false} />
               <XAxis dataKey="range" tick={{ fontSize: 10, fill: D.textMuted }} />
               <YAxis tick={{ fontSize: 10, fill: D.textMuted }} />
-              <Tooltip contentStyle={{ background: D.card, border: "none", borderRadius: D.radiusSm ?? 6, fontSize: 12 }} />
+              <Tooltip contentStyle={{ background: D.card, border: "none", borderRadius: 8, fontSize: 12 }} />
               <Bar dataKey="count" fill={D.blue} radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
