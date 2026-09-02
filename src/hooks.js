@@ -7,23 +7,24 @@ import { DEFAULT_DESIGN, MOBILE_BREAKPOINT } from "./constants.jsx";
 // ─── useTradeData ─────────────────────────────────────────────────────────────
 
 export function useTradeData() {
+  const [mode,    setMode]    = useState("backtesting");
   const [trades,  setTrades]  = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
 
   useEffect(() => {
     setLoading(true);
-    loadTrades("backtesting")
+    loadTrades(mode)
       .then(t => { setTrades(t); setLoading(false); })
       .catch(err => { setError(err.message); setLoading(false); });
-  }, []);
+  }, [mode]);
 
   const stats = useMemo(
     () => trades.length > 0 ? calcStats(trades) : null,
     [trades]
   );
 
-  return { trades, setTrades, stats, loading, error };
+  return { trades, setTrades, stats, loading, error, mode, setMode };
 }
 
 // ─── useIsMobile ──────────────────────────────────────────────────────────────

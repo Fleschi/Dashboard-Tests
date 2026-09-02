@@ -106,7 +106,7 @@ function SegmentedDateInput({ parts, onChange, D }) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export default function DataEntry({ trades, onTradesChange, design }) {
+export default function DataEntry({ trades, onTradesChange, design, mode = "backtesting" }) {
   const D = design;
   const [form, setForm]       = useState({ ...EMPTY_PARTS(), rr:"", pnl:"" });
   const [saving, setSaving]   = useState(false);
@@ -128,7 +128,7 @@ export default function DataEntry({ trades, onTradesChange, design }) {
     setSaving(true);
     try {
       const pnl = parseFloat(form.pnl)||0, rr = parseFloat(form.rr)||0;
-      const saved = await saveTrade({ date:isoDate, pnl, rr, mode:"backtesting" });
+      const saved = await saveTrade({ date:isoDate, pnl, rr, mode });
       onTradesChange(prev => [...prev, { date:isoDate, pnl, rr, id:saved.id }].sort((a,b) => new Date(a.date)-new Date(b.date)));
       setForm({ ...EMPTY_PARTS(), rr:"", pnl:"" });
     } catch(e) { console.error(e); }
@@ -195,7 +195,10 @@ export default function DataEntry({ trades, onTradesChange, design }) {
       {/* Form */}
       <div style={{ background:D.card, border:`1px solid ${D.border}`, borderRadius:12, padding:24 }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-          <div style={{ fontSize:15, fontWeight:600, color:D.text }}>New Trade</div>
+          <div>
+            <div style={{ fontSize:15, fontWeight:600, color:D.text }}>New Trade</div>
+            {mode === "live" && <div style={{ fontSize:11, color:D.textMuted, marginTop:2 }}>Live trades sync automatically from Tradovate — manual entries here are added on top.</div>}
+          </div>
           <button onClick={exportCSV} disabled={!trades.length} style={{ padding:"6px 14px", background:"transparent", border:`1px solid ${D.border}`, borderRadius:8, color:D.textMuted, cursor:"pointer", fontSize:12, fontWeight:500 }}>Export CSV</button>
         </div>
         <div style={{ display:"flex", gap:12, alignItems:"flex-end", flexWrap:"wrap" }}>

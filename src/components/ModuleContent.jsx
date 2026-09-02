@@ -4,13 +4,13 @@ import PropFirm      from "../modules/PropFirm";
 import TradeNotebook from "../modules/TradeNotebook";
 import DataEntry     from "../modules/DataEntry";
 
-export default function ModuleContent({ tab, globalTab, trades, setTrades, stats, design: D, onGoToData }) {
+export default function ModuleContent({ tab, globalTab, trades, setTrades, stats, design: D, onGoToData, mode }) {
   if (globalTab === "settings") return null;
 
   return (
     <>
       <div style={{ display: tab === "data" ? "block" : "none" }}>
-        <DataEntry trades={trades} onTradesChange={setTrades} design={D} />
+        <DataEntry trades={trades} onTradesChange={setTrades} design={D} mode={mode} />
       </div>
 
       {tab !== "data" && (

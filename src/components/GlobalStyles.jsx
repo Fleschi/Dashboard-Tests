@@ -18,7 +18,7 @@ export function GlobalStyles({ design: D }) {
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 22px 20px;
+        padding: 26px 24px;
         border-bottom: 1px solid ${D.border};
         flex-shrink: 0;
       }
@@ -43,8 +43,8 @@ export function GlobalStyles({ design: D }) {
 
       .side-item {
         position: relative;
-        display: flex; align-items: center; gap: 12px;
-        padding: 11px 20px;
+        display: flex; align-items: center; gap: 13px;
+        padding: 12px 24px;
         cursor: pointer;
         font-size: 13px;
         font-weight: 500;
@@ -75,8 +75,8 @@ export function GlobalStyles({ design: D }) {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 32px;
-        height: 56px;
+        padding: 0 40px;
+        height: 64px;
         border-bottom: 1px solid ${D.border};
         flex-shrink: 0;
       }

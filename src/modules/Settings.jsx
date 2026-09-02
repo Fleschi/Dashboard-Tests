@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DEFAULT_DESIGN, BACKGROUNDS } from "../constants.jsx";
+import { DEFAULT_DESIGN, BACKGROUNDS, THEMES } from "../constants.jsx";
 
 const STORAGE_KEY = "trading_dashboard_design";
 
@@ -32,6 +32,30 @@ export default function Settings({ design, onChange }) {
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: 24, width: "min(720px, 100%)" }}>
+
+        {/* Theme */}
+        <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
+          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 20, color: D.text }}>Theme</div>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            {THEMES.map(t => {
+              const isActive = D.themeId === t.themeId;
+              return (
+                <button key={t.themeId} onClick={() => onChange({ ...t })}
+                  style={{ width: 150, borderRadius: 12, cursor: "pointer", overflow: "hidden", border: `2px solid ${isActive ? D.blue : D.border}`, padding: 0, boxShadow: isActive ? `0 0 0 1px ${D.blue}` : "none", transition: "all 0.15s" }}>
+                  <div style={{ height: 64, background: t.bg, display: "flex", alignItems: "flex-end", gap: 4, padding: 10 }}>
+                    <div style={{ flex: 1, height: "40%", background: t.border, borderRadius: 2 }} />
+                    <div style={{ flex: 1, height: "70%", background: t.blue, borderRadius: 2 }} />
+                    <div style={{ flex: 1, height: "55%", background: t.border, borderRadius: 2 }} />
+                  </div>
+                  <div style={{ padding: "8px 10px", textAlign: "left", background: t.card, borderTop: `1px solid ${t.border}` }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: t.text }}>{t.label}</div>
+                    <div style={{ fontSize: 10, color: t.textMuted }}>{t.description}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Background Pattern */}
         <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>

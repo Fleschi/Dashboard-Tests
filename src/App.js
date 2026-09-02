@@ -8,10 +8,30 @@ import Settings          from "./modules/Settings";
 import PageBackground    from "./components/PageBackground";
 
 const FONT      = "'DM Sans', system-ui, sans-serif";
-const SIDEBAR_W = 216;
+const SIDEBAR_W = 232;
+
+function ModeToggle({ mode, setMode, design: D }) {
+  return (
+    <div style={{ display: "flex", background: D.bg, border: `1px solid ${D.border}`, borderRadius: 8, padding: 3, gap: 2 }}>
+      {[["backtesting", "Backtest"], ["live", "Live"]].map(([id, label]) => {
+        const isActive = mode === id;
+        return (
+          <button key={id} onClick={() => setMode(id)} style={{
+            padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
+            background: isActive ? D.blue : "transparent",
+            color: isActive ? "#ffffff" : D.textMuted,
+            transition: "all 0.12s ease",
+          }}>
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function App() {
-  const { trades, setTrades, stats, loading, error } = useTradeData();
+  const { trades, setTrades, stats, loading, error, mode, setMode } = useTradeData();
   const [design, setDesign] = useDesign();
   const isMobile = useIsMobile();
   const { tab, setTab, globalTab } = useNavigation();
@@ -36,7 +56,7 @@ export default function App() {
         <ModuleContent
           tab={tab} globalTab={globalTab}
           trades={trades} setTrades={setTrades} stats={stats}
-          design={D} onGoToData={goToData}
+          design={D} onGoToData={goToData} mode={mode}
         />
       )}
     </>
@@ -53,6 +73,7 @@ export default function App() {
           <div style={{ fontSize: 14, fontWeight: 700, color: D.text, letterSpacing: "0.01em" }}>
             {activeModule?.label || ""}
           </div>
+          {globalTab !== "settings" && <ModeToggle mode={mode} setMode={setMode} design={D} />}
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: 16, paddingBottom: BOTTOM_NAV_H + 16 }}>{content}</div>
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: BOTTOM_NAV_H, background: D.sidebar, borderTop: `1px solid ${D.border}`, display: "flex", alignItems: "center", justifyContent: "space-around", zIndex: 20 }}>
@@ -110,10 +131,11 @@ export default function App() {
             <span className="top-bar-crumb">Dashboard /</span>
             <span className="top-bar-title">{activeModule?.label || ""}</span>
           </div>
+          {globalTab !== "settings" && <ModeToggle mode={mode} setMode={setMode} design={D} />}
         </div>
 
         <div style={{ flex: 1, overflowY: "auto" }}>
-          <div style={{ padding: "28px 32px 40px" }}>
+          <div style={{ padding: "32px 40px 48px" }}>
             {content}
           </div>
         </div>
