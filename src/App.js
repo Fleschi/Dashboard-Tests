@@ -1,43 +1,50 @@
+import { useState, useEffect } from "react";
 import { useTradeData, useIsMobile, useDesign, useNavigation } from "./hooks";
 import { MODULES, SETTINGS_MODULE, BOTTOM_NAV_H } from "./constants.jsx";
+import { DEFAULT_TIME_RANGE } from "./modules/overview/timeRange";
 
 import { GlobalStyles }  from "./components/GlobalStyles";
 import NavIcon           from "./components/NavIcon";
 import ModuleContent     from "./components/ModuleContent";
 import Settings          from "./modules/Settings";
-import PageBackground    from "./components/PageBackground";
 
-const FONT      = "'DM Sans', system-ui, sans-serif";
+const FONT      = "'Inter', system-ui, sans-serif";
 const SIDEBAR_W = 232;
 
-function ModeToggle({ mode, setMode, design: D }) {
-  return (
-    <div style={{ display: "flex", background: D.bg, border: `1px solid ${D.border}`, borderRadius: 8, padding: 3, gap: 2 }}>
-      {[["backtesting", "Backtest"], ["live", "Live"]].map(([id, label]) => {
-        const isActive = mode === id;
-        return (
-          <button key={id} onClick={() => setMode(id)} style={{
-            padding: "6px 14px", fontSize: 12, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer",
-            background: isActive ? D.blue : "transparent",
-            color: isActive ? "#ffffff" : D.textMuted,
-            transition: "all 0.12s ease",
-          }}>
-            {label}
-          </button>
-        );
-      })}
-    </div>
-  );
+// The date-range filter is shared between Overview and Data — selecting a
+// range in either tab should affect both, and survive a page refresh the
+// same way Overview's range used to before it became shared.
+const TIME_RANGE_STORAGE_KEY = "trading_dashboard_time_range_v1";
+function loadSharedTimeRange() {
+  try {
+    const raw = localStorage.getItem(TIME_RANGE_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : DEFAULT_TIME_RANGE;
+  } catch { return DEFAULT_TIME_RANGE; }
 }
 
 export default function App() {
-  const { trades, setTrades, stats, loading, error, mode, setMode } = useTradeData();
+  const { trades, setTrades, stats, loading, error } = useTradeData();
   const [design, setDesign] = useDesign();
   const isMobile = useIsMobile();
   const { tab, setTab, globalTab } = useNavigation();
+  // The DOM node the active module portals its primary top-bar action(s) into.
+  // A state setter used as a ref callback so it's available the moment the node
+  // mounts (a plain useRef wouldn't trigger the re-render children need).
+  const [topBarSlot, setTopBarSlot] = useState(null);
+  // Set when a calendar-widget day is clicked; consumed by DataEntry to
+  // highlight/scroll to that day's trade(s), then cleared.
+  const [jumpDate, setJumpDate] = useState(null);
+  // Shared date-range filter, used by both Overview and Data.
+  const [timeRange, setTimeRange] = useState(loadSharedTimeRange);
+  useEffect(() => {
+    try { localStorage.setItem(TIME_RANGE_STORAGE_KEY, JSON.stringify(timeRange)); } catch {}
+  }, [timeRange]);
 
   const D      = design;
   const goToData = () => setTab("data");
+  // Clicking a day on the Overview calendar widget jumps to the Data tab and
+  // scrolls/highlights the matching trade(s) there (see DataEntry's jumpDate effect).
+  const goToDataDate = (date) => { setJumpDate(date); setTab("data"); };
 
   const activeModule = globalTab === "settings" ? SETTINGS_MODULE : MODULES.find(m => m.id === tab);
 
@@ -56,7 +63,11 @@ export default function App() {
         <ModuleContent
           tab={tab} globalTab={globalTab}
           trades={trades} setTrades={setTrades} stats={stats}
-          design={D} onGoToData={goToData} mode={mode}
+          design={D} onGoToData={goToData} onGoToDataDate={goToDataDate}
+          jumpDate={jumpDate} onJumpHandled={() => setJumpDate(null)}
+          timeRange={timeRange} onTimeRangeChange={setTimeRange}
+          isMobile={isMobile}
+          topBarSlot={isMobile ? null : topBarSlot}
         />
       )}
     </>
@@ -68,12 +79,10 @@ export default function App() {
     return (
       <div style={{ height: "100vh", color: D.text, fontFamily: FONT, display: "flex", flexDirection: "column", position: "relative", zIndex: 1, overflow: "hidden", background: D.bg }}>
         <GlobalStyles design={D} />
-        <PageBackground design={D} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", flexShrink: 0, borderBottom: `1px solid ${D.border}`, background: D.bg }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: D.text, letterSpacing: "0.01em" }}>
             {activeModule?.label || ""}
           </div>
-          {globalTab !== "settings" && <ModeToggle mode={mode} setMode={setMode} design={D} />}
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: 16, paddingBottom: BOTTOM_NAV_H + 16 }}>{content}</div>
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: BOTTOM_NAV_H, background: D.sidebar, borderTop: `1px solid ${D.border}`, display: "flex", alignItems: "center", justifyContent: "space-around", zIndex: 20 }}>
@@ -95,7 +104,6 @@ export default function App() {
   return (
     <div style={{ height: "100vh", color: D.text, fontFamily: FONT, position: "relative", zIndex: 1, overflow: "hidden", background: D.bg, display: "flex" }}>
       <GlobalStyles design={D} />
-      <PageBackground design={D} />
 
       {/* Sidebar */}
       <div className="side-rail" style={{ width: SIDEBAR_W, flexShrink: 0, position: "relative", zIndex: 20 }}>
@@ -109,8 +117,10 @@ export default function App() {
             const isActive = globalTab !== "settings" && tab === m.id;
             return (
               <button key={m.id} className={`side-item${isActive ? " active" : ""}`} onClick={() => setTab(m.id)}>
-                <NavIcon path={m.icon} />
-                <span>{m.label}</span>
+               <span className="side-item-pill">
+                                 <span className="side-icon-badge"><NavIcon path={m.icon} /></span>
+                                 <span>{m.label}</span>
+                               </span>
               </button>
             );
           })}
@@ -118,8 +128,10 @@ export default function App() {
 
         <div className="side-foot">
           <button className={`side-item${globalTab === "settings" ? " active" : ""}`} onClick={() => setTab("settings")}>
-            <NavIcon path={SETTINGS_MODULE.icon} />
-            <span>{SETTINGS_MODULE.label}</span>
+            <span className="side-item-pill">
+                          <span className="side-icon-badge"><NavIcon path={SETTINGS_MODULE.icon} /></span>
+                          <span>{SETTINGS_MODULE.label}</span>
+                        </span>
           </button>
         </div>
       </div>
@@ -131,7 +143,7 @@ export default function App() {
             <span className="top-bar-crumb">Dashboard /</span>
             <span className="top-bar-title">{activeModule?.label || ""}</span>
           </div>
-          {globalTab !== "settings" && <ModeToggle mode={mode} setMode={setMode} design={D} />}
+          <div ref={setTopBarSlot} style={{ display: "flex", alignItems: "center", gap: 10 }} />
         </div>
 
         <div style={{ flex: 1, overflowY: "auto" }}>

@@ -5,7 +5,7 @@ import { fmt } from "../utils/calculations";
 
 // ─── EquityCurve ─────────────────────────────────────────────────────────────
 
-export function EquityCurve({ trades, equityCurve: prebuilt, D }) {
+export function EquityCurve({ trades, equityCurve: prebuilt, D, bare = false }) {
   const curveData = prebuilt
     ? [{ index: 0, equity: 0 }, ...prebuilt]
     : buildCurveFromTrades(trades);
@@ -25,34 +25,46 @@ export function EquityCurve({ trades, equityCurve: prebuilt, D }) {
     if (!active || !payload?.length) return null;
     const d = payload[0].payload;
     return (
-      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 8, padding: "8px 12px", fontSize: 12 }}>
-        <div style={{ color: D.textMuted, marginBottom: 2 }}>Trade #{d.index}</div>
+      <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 8, padding: "12px 17px", fontSize: 17 }}>
+        <div style={{ color: D.textMuted, marginBottom: 3 }}>Trade #{d.index}</div>
         <div style={{ color: accent, fontWeight: 600 }}>{fmt(d.equity)}</div>
       </div>
     );
   };
 
+  const chartBody = (
+    <>
+      <div style={{ fontSize: 16, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 16, fontWeight: 500 }}>Equity Curve</div>
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={curveData} margin={{ top: 5, right: 11, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%"  stopColor={accent} stopOpacity={0.15} />
+                <stop offset="95%" stopColor={accent} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke={D.border} />
+            <XAxis dataKey="index" tick={false} axisLine={false} tickLine={false} />
+            <YAxis domain={[yMin, yMax]} tick={{ fontSize: 15, fill: D.textMuted }} axisLine={false} tickLine={false}
+              tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} width={61} />
+            <Tooltip content={<CustomTooltip />} />
+            <ReferenceLine y={0} stroke={D.border} strokeDasharray="4 4" />
+            <Area type="monotone" dataKey="equity" stroke={accent} strokeWidth={2}
+              fill={`url(#${gradId})`} dot={false} isAnimationActive={false} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </>
+  );
+
+  if (bare) {
+    return <div style={{ height: "100%", padding: 27, display: "flex", flexDirection: "column" }}>{chartBody}</div>;
+  }
+
   return (
-    <GlowCard design={D} style={{ padding: 20, flex: 1, minWidth: 0 }}>
-      <div style={{ fontSize: 11, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 12, fontWeight: 500 }}>Equity Curve</div>
-      <ResponsiveContainer width="100%" height={220}>
-        <AreaChart data={curveData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-          <defs>
-            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%"  stopColor={accent} stopOpacity={0.15} />
-              <stop offset="95%" stopColor={accent} stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke={D.border} />
-          <XAxis dataKey="index" tick={false} axisLine={false} tickLine={false} />
-          <YAxis domain={[yMin, yMax]} tick={{ fontSize: 10, fill: D.textMuted }} axisLine={false} tickLine={false}
-            tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} width={46} />
-          <Tooltip content={<CustomTooltip />} />
-          <ReferenceLine y={0} stroke={D.border} strokeDasharray="4 4" />
-          <Area type="monotone" dataKey="equity" stroke={accent} strokeWidth={2}
-            fill={`url(#${gradId})`} dot={false} isAnimationActive={false} />
-        </AreaChart>
-      </ResponsiveContainer>
+    <GlowCard design={D} style={{ padding: 20, flex: 1, minWidth: 0, display: "flex", flexDirection: "column", height: 280 }}>
+      {chartBody}
     </GlowCard>
   );
 }
@@ -207,7 +219,7 @@ function YearModal({ trades, initialYear, initialMonth, onSelectMonth, onClose, 
 
 // ─── CalendarView ─────────────────────────────────────────────────────────────
 
-export function CalendarView({ trades, D }) {
+export function CalendarView({ trades, D, bare = false, onDayClick }) {
   const getLatest = (ts) => {
     if (!ts?.length) return new Date();
     const d = new Date([...ts].sort((a,b) => new Date(b.date)-new Date(a.date))[0].date);
@@ -271,48 +283,64 @@ export function CalendarView({ trades, D }) {
         />
       )}
 
-      <GlowCard design={D} style={{ padding: 24 }}>
+      <CalendarCardWrap D={D} bare={bare}>
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 21 }}>
           <button
             onClick={() => setShowYearModal(true)}
-            style={{ ...navBtnStyle(D), fontSize: 13, fontWeight: 600, color: D.text, display: "flex", alignItems: "center", gap: 6 }}
+            style={{ ...navBtnStyle(D), fontSize: 19, fontWeight: 600, color: D.text, display: "flex", alignItems: "center", gap: 8 }}
           >
             {monthName} ↗
           </button>
 
-          <div style={{ display: "flex", gap: 6 }}>
+          <div style={{ display: "flex", gap: 8 }}>
             <button onClick={() => setViewDate(new Date(year, month - 1, 1))} style={navBtnStyle(D)}>←</button>
             <button onClick={() => setViewDate(new Date(year, month + 1, 1))} style={navBtnStyle(D)}>→</button>
           </div>
         </div>
 
         {/* Mo–So header */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3, marginBottom: 4 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 5 }}>
           {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => (
-            <div key={d} style={{ textAlign: "center", fontSize: 10, color: D.textMuted, padding: "3px 0", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>{d}</div>
+            <div key={d} style={{ textAlign: "center", fontSize: 15, color: D.textMuted, padding: "4px 0", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" }}>{d}</div>
           ))}
         </div>
 
         {/* Day grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 3 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
           {cells.map((day, i) => {
             if (!day) return <div key={`e${i}`} />;
             const data = byDay[day];
             const today = new Date();
             const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year;
-            const bg    = data ? (data.pnl > 0 ? `${D.green}18` : data.pnl < 0 ? `${D.red}18` : `${D.yellow}15`) : "transparent";
+            // No-trade days get a subtle tint toward D.text instead of sitting flush
+            // with the surrounding background. D.text is always the color chosen to
+            // contrast against the background, so a low-alpha wash of it lightens a
+            // dark theme and darkens a light theme automatically — no explicit
+            // light/dark flag needed.
+            const bg    = data ? (data.pnl > 0 ? `${D.green}18` : data.pnl < 0 ? `${D.red}18` : `${D.yellow}15`) : `${D.text}0d`;
             const color = data ? (data.pnl > 0 ? D.green : data.pnl < 0 ? D.red : D.yellow) : D.textMuted;
+            const clickable = !!(data && onDayClick);
             return (
-              <div key={day} title={data ? `${data.count} trades · ${fmt(data.pnl)}` : ""}
-                style={{ background: bg, border: `1px solid ${isToday ? D.blue : data ? color + "35" : D.border}`, borderRadius: 6, padding: "5px 4px", minHeight: 75 }}>
-                <div style={{ fontSize: 10, fontWeight: isToday ? 700 : 400, color: isToday ? D.blue : D.textMuted, marginBottom: 2 }}>{day}</div>
+              <div key={day}
+                title={data ? `${data.count} trades · ${fmt(data.pnl)}${clickable ? " — click to view in Data tab" : ""}` : ""}
+                onClick={clickable ? () => onDayClick(new Date(year, month, day)) : undefined}
+                style={{
+                  background: bg,
+                  borderRadius: 8, padding: "8px 7px", minHeight: 107,
+                  cursor: clickable ? "pointer" : "default",
+                  transition: "filter 0.12s ease",
+                }}
+                onMouseEnter={clickable ? (e => e.currentTarget.style.filter = "brightness(1.25)") : undefined}
+                onMouseLeave={clickable ? (e => e.currentTarget.style.filter = "none") : undefined}
+              >
+                <div style={{ fontSize: 15, fontWeight: isToday ? 700 : 400, color: isToday ? D.blue : D.textMuted, marginBottom: 3 }}>{day}</div>
                 {data && (
                   <>
-                    <div style={{ fontSize: 10, fontWeight: 700, color, lineHeight: 1.2 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color, lineHeight: 1.2 }}>
                       {data.pnl >= 0 ? "+" : ""}{Math.abs(data.pnl) >= 1000 ? `${(data.pnl / 1000).toFixed(1)}k` : data.pnl.toFixed(0)}
                     </div>
-                    <div style={{ fontSize: 9, color: D.textMuted, marginTop: 1 }}>{data.wins}W/{data.losses}L</div>
+                    <div style={{ fontSize: 13, color: D.textMuted, marginTop: 1 }}>{data.wins}W/{data.losses}L</div>
                   </>
                 )}
               </div>
@@ -321,25 +349,30 @@ export function CalendarView({ trades, D }) {
         </div>
 
         {/* Stats strip — always visible */}
-        <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${D.border}`, display: "flex", gap: 28 }}>
+        <div style={{ marginTop: 21, paddingTop: 21, borderTop: `1px solid ${D.border}`, display: "flex", gap: 37 }}>
           {[
             ["Month PnL", hasData ? fmt(monthPnl) : "—", hasData ? (monthPnl >= 0 ? D.green : D.red) : D.textMuted],
             ["Green Days", hasData ? greenDays : "—", D.green],
             ["Red Days",   hasData ? redDays   : "—", D.red],
           ].map(([lbl, val, col]) => (
             <div key={lbl}>
-              <div style={{ fontSize: 10, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 3 }}>{lbl}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: col }}>{val}</div>
+              <div style={{ fontSize: 15, color: D.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>{lbl}</div>
+              <div style={{ fontSize: 21, fontWeight: 700, color: col }}>{val}</div>
             </div>
           ))}
         </div>
-      </GlowCard>
+      </CalendarCardWrap>
     </>
   );
 }
 
+function CalendarCardWrap({ D, bare, children }) {
+  if (bare) return <div style={{ padding: 8 }}>{children}</div>;
+  return <GlowCard design={D} style={{ padding: 24 }}>{children}</GlowCard>;
+}
+
 const navBtnStyle = (D) => ({
-  padding: "4px 10px", background: "transparent",
+  padding: "7px 16px", background: "transparent",
   border: `1px solid ${D.border}`, borderRadius: 6,
-  color: D.textMuted, cursor: "pointer", fontSize: 13,
+  color: D.textMuted, cursor: "pointer", fontSize: 19,
 });

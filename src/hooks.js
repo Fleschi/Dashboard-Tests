@@ -2,29 +2,28 @@ import { useState, useEffect, useMemo } from "react";
 import { calcStats } from "./utils/calculations";
 import { loadTrades } from "./utils/supabase";
 import { loadDesign } from "./modules/Settings";
-import { DEFAULT_DESIGN, MOBILE_BREAKPOINT } from "./constants.jsx";
+import { buildDesign, DEFAULT_APPEARANCE_ID, DEFAULT_ACCENT_ID, MOBILE_BREAKPOINT } from "./constants.jsx";
 
 // ─── useTradeData ─────────────────────────────────────────────────────────────
 
 export function useTradeData() {
-  const [mode,    setMode]    = useState("backtesting");
   const [trades,  setTrades]  = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
 
   useEffect(() => {
     setLoading(true);
-    loadTrades(mode)
+    loadTrades("backtesting")
       .then(t => { setTrades(t); setLoading(false); })
       .catch(err => { setError(err.message); setLoading(false); });
-  }, [mode]);
+  }, []);
 
   const stats = useMemo(
     () => trades.length > 0 ? calcStats(trades) : null,
     [trades]
   );
 
-  return { trades, setTrades, stats, loading, error, mode, setMode };
+  return { trades, setTrades, stats, loading, error };
 }
 
 // ─── useIsMobile ──────────────────────────────────────────────────────────────
@@ -44,7 +43,7 @@ export function useIsMobile() {
 // ─── useDesign ────────────────────────────────────────────────────────────────
 
 export function useDesign() {
-  return useState(() => loadDesign() || DEFAULT_DESIGN);
+  return useState(() => loadDesign() || buildDesign(DEFAULT_APPEARANCE_ID, DEFAULT_ACCENT_ID));
 }
 
 // ─── useNavigation ────────────────────────────────────────────────────────────

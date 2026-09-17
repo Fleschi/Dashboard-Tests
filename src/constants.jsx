@@ -1,32 +1,80 @@
-// ─── Design ───────────────────────────────────────────────────────────────────
+// ─── Design: Appearance + Interface Accent Color ───────────────────────────────
+//
+// The whole customization system is exactly two independent choices:
+//   1. Appearance   — a predefined theme controlling Background/Card/Border/Text.
+//   2. Accent Color — a predefined color used for interface accent elements.
+// There are no individual color pickers and no background-pattern system.
+// Win/loss/break-even colors are fixed — they're a trading convention, not a
+// theme choice, so they stay constant across every Appearance/Accent combo.
 
-export const THEMES = [
-  {
-    themeId: "terminal", label: "Terminal", description: "Dark, cool-toned",
-    bg: "#0a0e15", card: "#10161f", border: "#1c2735", sidebar: "#070a10",
-    green: "#3ddc97", red: "#ff5470", blue: "#4f9dff", purple: "#4f9dff",
-    yellow: "#f0b84f", text: "#e9eef5", textMuted: "#647388",
-    radius: 10,
-    background: "none", radialColor: "#4f9dff",
+export const APPEARANCES = {
+  light: {
+    id: "light", label: "Light",
+    bg: "#ededed", card: "#fefefe", border: "#dcdfe4",
+    text: "#15171c", textMuted: "#6b7280", sidebar: "#fefefe",
   },
-  {
-    themeId: "stripe", label: "Stripe", description: "Light, clean & airy",
-    bg: "#fafaf9", card: "#ffffff", border: "#e5e3de", sidebar: "#ffffff",
-    green: "#1f9d63", red: "#e0393e", blue: "#6a5acd", purple: "#6a5acd",
-    yellow: "#c98a1c", text: "#28262a", textMuted: "#8f8c85",
-    radius: 10,
-    background: "none", radialColor: "#6a5acd",
+  dark: {
+    id: "dark", label: "Dark",
+    bg: "#0a0b0c", card: "#131416", border: "#242628",
+    text: "#f5f5f5", textMuted: "#787f88", sidebar: "#131416",
   },
+  slate: {
+    id: "slate", label: "Slate",
+    bg: "#d6dae0", card: "#eaebf0", border: "#c7cbd3",
+    text: "#1b1e24", textMuted: "#5f6672", sidebar: "#eaebf0",
+  },
+  iris: {
+    id: "iris", label: "Iris",
+    bg: "#0a0a0d", card: "#151519", border: "#232329",
+    text: "#f5f5f7", textMuted: "#84838f", sidebar: "#151519",
+  },
+};
+
+export const ACCENT_LIST = [
+  ["indigo",   "Indigo",   "#6366f1"],
+  ["purple",   "Purple",   "#a855f7"],
+  ["pink",     "Pink",     "#ec4899"],
+  ["rose",     "Rose",     "#f43f5e"],
+  ["red",      "Red",      "#ef4444"],
+  ["ruby",     "Ruby",     "#be123c"],
+  ["orange",   "Orange",   "#f97316"],
+  ["peach",    "Peach",    "#fb7d62"],
+  ["gold",     "Gold",     "#c99a2e"],
+  ["lime",     "Lime",     "#65a30d"],
+  ["green",    "Green",    "#22c55e"],
+  ["teal",     "Teal",     "#14b8a6"],
+  ["sky",      "Sky",      "#0ea5e9"],
+  ["platinum", "Platinum", "#8b929b"],
 ];
 
-export const DEFAULT_DESIGN = THEMES[0];
+export const ACCENTS = Object.fromEntries(ACCENT_LIST.map(([id, label, color]) => [id, { id, label, color }]));
+
+export const DEFAULT_APPEARANCE_ID = "dark";
+export const DEFAULT_ACCENT_ID     = "indigo";
+
+// Fixed trade-outcome colors — not user-customizable, constant across every theme.
+const RESULT_COLORS = { green: "#2dd888", red: "#ff5470", yellow: "#eab308" };
+
+// Combines an Appearance + Accent into the flat color object every component
+// reads from (`D.bg`, `D.card`, `D.blue`, etc.) — the single source of truth
+// the rest of the app is built on.
+export function buildDesign(appearanceId, accentId) {
+  const appearance = APPEARANCES[appearanceId] || APPEARANCES[DEFAULT_APPEARANCE_ID];
+  const accent     = ACCENTS[accentId] || ACCENTS[DEFAULT_ACCENT_ID];
+  return {
+    appearanceId: appearance.id, accentId: accent.id,
+    bg: appearance.bg, card: appearance.card, border: appearance.border,
+    text: appearance.text, textMuted: appearance.textMuted, sidebar: appearance.sidebar,
+    blue: accent.color,
+    ...RESULT_COLORS,
+    radius: 4,
+  };
+}
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
 
 export const MODULES = [
   { id: "overview",   label: "Overview",    icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
-  { id: "propfirm",   label: "Prop Firm",   icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" },
-  { id: "montecarlo", label: "Monte Carlo", icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
   { id: "data",       label: "Data",        icon: "M4 6h16M4 10h16M4 14h16M4 18h16" },
   { id: "notebook",   label: "Journal",     icon: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" },
 ];
@@ -40,66 +88,3 @@ export const SETTINGS_MODULE = {
 
 export const BOTTOM_NAV_H      = 56;
 export const MOBILE_BREAKPOINT = 768;
-
-// ─── Backgrounds ─────────────────────────────────────────────────────────────
-
-export const BACKGROUNDS = [
-  {
-    id: "none",
-    label: "Solid",
-    preview: (bg) => ({ background: bg }),
-    render: () => null,
-  },
-  {
-    id: "radial-dual",
-    label: "Dual Radial",
-    preview: (bg, rc = "#a78bfa") => ({
-      background: `radial-gradient(circle at 20% 80%, ${rc}45, transparent 50%), radial-gradient(circle at 80% 20%, ${rc}35, transparent 50%), ${bg}`,
-    }),
-    render: (D) => (
-      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
-        background: `radial-gradient(circle 700px at 15% 85%, ${D.radialColor || "#a78bfa"}22, transparent), radial-gradient(circle 700px at 85% 15%, ${D.radialColor || "#a78bfa"}18, transparent), ${D.bg}`,
-      }} />
-    ),
-  },
-  {
-    id: "radial-multi",
-    label: "Multi Gradient",
-    preview: (bg) => ({
-      background: `radial-gradient(circle at 50% 120%, #a78bfa40, transparent 35%), radial-gradient(circle at 50% 110%, #ffffff20, transparent 40%), ${bg}`,
-    }),
-    render: (D) => (
-      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: `radial-gradient(circle 900px at 50% 120%, ${D.multiColor1 || "#a78bfa"}${Math.round((D.multiOpacity1 || 0.25) * 255).toString(16).padStart(2, "0")}, transparent), radial-gradient(circle 800px at 50% 115%, ${D.multiColor2 || "#ffffff"}${Math.round((D.multiOpacity2 || 0.15) * 255).toString(16).padStart(2, "0")}, transparent), ${D.bg}`,
-          filter: "blur(60px)",
-        }} />
-      </div>
-    ),
-  },
-  {
-    id: "mesh-gradient",
-    label: "Mesh Gradient",
-    preview: (bg) => ({
-      background: `radial-gradient(circle at 100% 0%, #6366f140, transparent 50%), radial-gradient(circle at 0% 100%, #8b5cf640, transparent 50%), radial-gradient(circle at 100% 100%, #3b82f630, transparent 50%), ${bg}`,
-    }),
-    render: (D) => (
-      <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: `
-            radial-gradient(circle 800px at 100% 0%, ${D.meshColor1 || "#6366f1"}${Math.round((D.meshOpacity1 || 0.35) * 255).toString(16).padStart(2, "0")}, transparent),
-            radial-gradient(circle 700px at 0% 100%, ${D.meshColor2 || "#8b5cf6"}${Math.round((D.meshOpacity2 || 0.35) * 255).toString(16).padStart(2, "0")}, transparent),
-            radial-gradient(circle 600px at 100% 100%, ${D.meshColor3 || "#3b82f6"}${Math.round((D.meshOpacity3 || 0.25) * 255).toString(16).padStart(2, "0")}, transparent),
-            radial-gradient(circle 500px at 0% 0%, ${D.meshColor4 || "#1e1b4b"}${Math.round((D.meshOpacity4 || 0.4) * 255).toString(16).padStart(2, "0")}, transparent),
-            ${D.bg}
-          `,
-          filter: "blur(80px)",
-        }} />
-      </div>
-    ),
-  },
-];

@@ -83,29 +83,34 @@ export async function updateTrade(id, trade) {
   if (error) throw error;
 }
 
-// ── Notebook Entries ──────────────────────────────────────────────────────────
+// ── Journal Entries ────────────────────────────────────────────────────────
+// journal_entries is fully independent of the (backtesting) trades table —
+// day/time/pnl are entered directly by the user on the journal form.
 
 export async function loadNotebookEntries() {
   const { data, error } = await supabase
-    .from("notebook_entries")
+    .from("journal_entries")
     .select("*")
-    .order("time_entered", { ascending: false });
+    .order("day", { ascending: false })
+    .order("time_entered", { ascending: false, nullsFirst: false });
   if (error) throw error;
   return data;
 }
 
 export async function saveNotebookEntry(entry) {
   const { data, error } = await supabase
-    .from("notebook_entries")
+    .from("journal_entries")
     .insert([{
-      time_entered:            entry.time_entered,
-      daily_bias:              entry.daily_bias,
-      draws_on_liquidity:      entry.draws_on_liquidity,
+      day:                     entry.day,
+      time_entered:            entry.time_entered            || null,
+      daily_bias:              entry.daily_bias               || null,
+      pnl:                     entry.pnl ?? null,
+      tod_time:                entry.tod_time                 || null,
+      notes:                   entry.notes                    || null,
+      key_takeaway:            entry.key_takeaway              || null,
       screenshot_htf_url:      entry.screenshot_htf_url      || null,
       screenshot_tod_url:      entry.screenshot_tod_url      || null,
       screenshot_my_trade_url: entry.screenshot_my_trade_url || null,
-      went_good:               entry.went_good,
-      key_takeaway:            entry.key_takeaway,
     }])
     .select()
     .single();
@@ -115,18 +120,20 @@ export async function saveNotebookEntry(entry) {
 
 export async function updateNotebookEntry(id, entry) {
   const updates = {
-    time_entered:          entry.time_entered,
-    daily_bias:            entry.daily_bias,
-    draws_on_liquidity:    entry.draws_on_liquidity,
-    went_good:             entry.went_good,
-    key_takeaway:          entry.key_takeaway,
+    day:          entry.day,
+    time_entered: entry.time_entered   || null,
+    daily_bias:   entry.daily_bias     || null,
+    pnl:          entry.pnl ?? null,
+    tod_time:     entry.tod_time       || null,
+    notes:        entry.notes          || null,
+    key_takeaway: entry.key_takeaway   || null,
   };
   if (entry.screenshot_htf_url      !== undefined) updates.screenshot_htf_url      = entry.screenshot_htf_url;
   if (entry.screenshot_tod_url      !== undefined) updates.screenshot_tod_url      = entry.screenshot_tod_url;
   if (entry.screenshot_my_trade_url !== undefined) updates.screenshot_my_trade_url = entry.screenshot_my_trade_url;
 
   const { data, error } = await supabase
-    .from("notebook_entries")
+    .from("journal_entries")
     .update(updates)
     .eq("id", id)
     .select()
@@ -136,7 +143,7 @@ export async function updateNotebookEntry(id, entry) {
 }
 
 export async function deleteNotebookEntry(id) {
-  const { error } = await supabase.from("notebook_entries").delete().eq("id", id);
+  const { error } = await supabase.from("journal_entries").delete().eq("id", id);
   if (error) throw error;
 }
 

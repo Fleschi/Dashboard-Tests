@@ -1,16 +1,18 @@
 import Overview      from "../modules/Overview";
-import MonteCarlo    from "../modules/MonteCarlo";
-import PropFirm      from "../modules/PropFirm";
 import TradeNotebook from "../modules/TradeNotebook";
 import DataEntry     from "../modules/DataEntry";
 
-export default function ModuleContent({ tab, globalTab, trades, setTrades, stats, design: D, onGoToData, mode }) {
+export default function ModuleContent({ tab, globalTab, trades, setTrades, stats, design: D, onGoToData, onGoToDataDate, jumpDate, onJumpHandled, timeRange, onTimeRangeChange, isMobile, topBarSlot }) {
   if (globalTab === "settings") return null;
 
   return (
     <>
       <div style={{ display: tab === "data" ? "block" : "none" }}>
-        <DataEntry trades={trades} onTradesChange={setTrades} design={D} mode={mode} />
+        <DataEntry
+          trades={trades} onTradesChange={setTrades} design={D} topBarSlot={topBarSlot} active={tab === "data"}
+          jumpDate={jumpDate} onJumpHandled={onJumpHandled}
+          timeRange={timeRange} onTimeRangeChange={onTimeRangeChange}
+        />
       </div>
 
       {tab !== "data" && (
@@ -18,10 +20,13 @@ export default function ModuleContent({ tab, globalTab, trades, setTrades, stats
           {trades.length === 0 && tab !== "notebook" && (
             <EmptyState onAction={onGoToData} label="Add trades →" message="No trades yet." design={D} />
           )}
-          {tab === "overview"   && <Overview stats={stats} design={D} />}
-          {tab === "propfirm"   && <PropFirm stats={stats} design={D} />}
-          {tab === "montecarlo" && <MonteCarlo stats={stats} design={D} />}
-          {tab === "notebook"   && <TradeNotebook design={D} />}
+          {tab === "overview"   && (
+            <Overview
+              stats={stats} design={D} isMobile={isMobile} topBarSlot={topBarSlot} onGoToDataDate={onGoToDataDate}
+              timeRange={timeRange} onTimeRangeChange={onTimeRangeChange}
+            />
+          )}
+          {tab === "notebook"   && <TradeNotebook design={D} topBarSlot={topBarSlot} />}
         </>
       )}
     </>
