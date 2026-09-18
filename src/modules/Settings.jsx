@@ -38,7 +38,7 @@ export default function Settings({ design, onChange }) {
 
         {/* Appearance */}
         <div style={{ background: D.card, border: `1px solid ${D.border}`, borderRadius: 16, padding: 28 }}>
-          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4, color: D.text }}>Appearance</div>
+          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4, color: D.text }}>Appearance</div>
           <div style={{ fontSize: 12, color: D.textMuted, marginBottom: 20 }}>Sets the Background and Cards throughout the dashboard.</div>
           <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
             {Object.values(APPEARANCES).map(a => {
