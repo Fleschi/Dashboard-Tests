@@ -15,7 +15,7 @@ const DEFAULT_FIRM = (id) => ({
 });
 
 const DRAWDOWN_LABELS = {
-  static: "Static (from initial balance)",
+  static: "Static (from initial balance)", //f
   trailing: "Trailing (from equity peak)",
   eod_trailing: "EOD Trailing (end-of-day peak)",
 };
