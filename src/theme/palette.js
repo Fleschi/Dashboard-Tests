@@ -1,7 +1,7 @@
 // Theme palette: appearances, the shared swatch list and the default choices.
 //
 // The customization system is one Appearance (a predefined theme controlling
-// Background/Card/Border/Text) plus four independent color pickers, each
+// Background/Card/Border/Text) plus five independent color pickers, each
 // choosing either a swatch from the shared palette (COLOR_LIST) or an exact
 // custom color typed/picked via a native color input:
 //   1. Interface Accent Color — general interface accent elements (nav,
@@ -10,8 +10,8 @@
 //   3. Loss Color    — negative PnL, losing trades, negative indicators.
 //   4. Metric Color  — metric/statistical elements that aren't win/loss-
 //      colored (e.g. the Equity Curve line).
-// Break-even color is fixed — it's a trading convention, not a theme choice —
-// so it stays constant across every combination.
+//   5. Break-even Color — break-even trades (pnl === 0). Defaults to the
+//      conventional yellow, but can be changed like the others.
 
 export const APPEARANCES = {
   light: {
@@ -71,3 +71,6 @@ export const DEFAULT_PROFIT_COLOR_ID = "emerald";
 export const DEFAULT_LOSS_COLOR_ID   = "crimson";
 
 export const DEFAULT_METRIC_COLOR_ID = "indigo";
+
+// Default break-even yellow, stored as a hex string (custom-colour format).
+export const DEFAULT_BREAK_EVEN_COLOR_ID = "#eab308";

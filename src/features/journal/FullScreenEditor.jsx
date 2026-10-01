@@ -14,7 +14,7 @@ function ReadSummaryBar({ D, form }) {
   const pnl = hasPnl ? Number(form.pnl) : null;
   const { label, color } = outcomeMeta(pnl, D);
   const item = (title, value) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 3, minWidth: 0 }}>
       <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: D.textMuted }}>{title}</span>
       <span style={{ fontSize: 15, fontWeight: 600, color: D.text }}>{value}</span>
     </div>
@@ -22,14 +22,14 @@ function ReadSummaryBar({ D, form }) {
   const divider = <span aria-hidden="true" style={{ width: 1, alignSelf: "stretch", background: D.border }} />;
   return (
     <div style={{
-      display: "flex", flexWrap: "wrap", alignItems: "center", gap: 24, padding: "14px 20px",
+      display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 24, padding: "14px 20px",
       background: `${D.blue}10`, border: `1px solid ${D.border}`, borderLeft: `3px solid ${color}`, borderRadius: 12,
     }}>
       {item("Date", form.day ? fmtEntryDate(form.day) : "—")}
       {divider}
       {item("Time", form.time ? form.time.slice(0, 5) : "—")}
       {divider}
-      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
         <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: D.textMuted }}>Result</span>
         <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color, background: `${color}20`, borderRadius: 6, padding: "2px 8px" }}>{label}</span>

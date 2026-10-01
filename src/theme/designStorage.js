@@ -1,5 +1,5 @@
 import { buildDesign, defaultDesign, isValidColorValue } from "./buildDesign";
-import { APPEARANCES, DEFAULT_ACCENT_ID, DEFAULT_APPEARANCE_ID, DEFAULT_LOSS_COLOR_ID, DEFAULT_METRIC_COLOR_ID, DEFAULT_PROFIT_COLOR_ID } from "./palette";
+import { APPEARANCES, DEFAULT_ACCENT_ID, DEFAULT_APPEARANCE_ID, DEFAULT_BREAK_EVEN_COLOR_ID, DEFAULT_LOSS_COLOR_ID, DEFAULT_METRIC_COLOR_ID, DEFAULT_PROFIT_COLOR_ID } from "./palette";
 
 const STORAGE_KEY = "trading_dashboard_design";
 
@@ -20,7 +20,8 @@ export function loadDesign() {
     const profitColorId = pick(parsed.profitColorId, DEFAULT_PROFIT_COLOR_ID);
     const lossColorId   = pick(parsed.lossColorId,   DEFAULT_LOSS_COLOR_ID);
     const metricColorId = pick(parsed.metricColorId, DEFAULT_METRIC_COLOR_ID);
-    return buildDesign(appearanceId, accentId, profitColorId, lossColorId, metricColorId);
+    const breakEvenColorId = pick(parsed.breakEvenColorId, DEFAULT_BREAK_EVEN_COLOR_ID);
+    return buildDesign(appearanceId, accentId, profitColorId, lossColorId, metricColorId, breakEvenColorId);
   } catch {
     return defaultDesign();
   }
@@ -34,6 +35,7 @@ export function saveDesign(design) {
       profitColorId: design.profitColorId,
       lossColorId: design.lossColorId,
       metricColorId: design.metricColorId,
+      breakEvenColorId: design.breakEvenColorId,
     }));
   } catch {}
 }

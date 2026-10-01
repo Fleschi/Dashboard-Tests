@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer, NodeViewWrapper } from "@tiptap/react";
 import { uploadJournalScreenshot } from "../../../../services/supabase/journal";
-import { useJournal, MENU_FONT, popoverStyle, IconX, IconTrash, IconImages, IconCheck, IconChevron } from "../journalUi";
+import { useJournal, MENU_FONT, popoverStyle, IconX, IconTrash, IconImages, IconCheck, IconSettings } from "../journalUi";
 
 // No single entry can hold more than this many images — mainly so the
 // editor can't be used to quietly run up unbounded Supabase Storage usage.
@@ -231,11 +231,11 @@ export function BlockMenu({ D, size, onSize, onAdd, onDelete, label = "Gallery",
       <button ref={btnRef} type="button" title={`${label} options`} aria-label={`${label} options`} aria-haspopup="menu" aria-expanded={open}
         onMouseDown={e => { e.preventDefault(); setOpen(o => !o); }}
         style={{
-          height: 28, padding: "0 10px", border: `1px solid ${open ? D.blue : D.border}`, borderRadius: 8, cursor: "pointer",
+          width: 28, height: 28, padding: 0, justifyContent: "center", border: `1px solid ${open ? D.blue : D.border}`, borderRadius: 8, cursor: "pointer",
           background: open ? D.blue : D.card, color: open ? "#fff" : D.text, fontFamily: MENU_FONT, fontSize: 12, fontWeight: 600,
           display: "flex", alignItems: "center", gap: 4,
         }}>
-        {label} <IconChevron size={12} />
+        <IconSettings size={15} />
       </button>
 
       {open && (

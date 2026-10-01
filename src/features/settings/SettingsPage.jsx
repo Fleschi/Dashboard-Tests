@@ -2,18 +2,19 @@ import { useEffect } from "react";
 import ColorPicker from "../../shared/components/ColorPicker/ColorPicker";
 import { buildDesign, defaultDesign } from "../../theme/buildDesign";
 import { saveDesign } from "../../theme/designStorage";
-import { APPEARANCES, COLOR_LIST, DEFAULT_ACCENT_ID, DEFAULT_LOSS_COLOR_ID, DEFAULT_METRIC_COLOR_ID, DEFAULT_PROFIT_COLOR_ID } from "../../theme/palette";
+import { APPEARANCES, COLOR_LIST, DEFAULT_ACCENT_ID, DEFAULT_BREAK_EVEN_COLOR_ID, DEFAULT_LOSS_COLOR_ID, DEFAULT_METRIC_COLOR_ID, DEFAULT_PROFIT_COLOR_ID } from "../../theme/palette";
 
 export default function SettingsPage({ design, onChange }) {
   const D = design;
 
   useEffect(() => { saveDesign(design); }, [design]);
 
-  const setAppearance  = (appearanceId)  => onChange(buildDesign(appearanceId, D.accentId, D.profitColorId, D.lossColorId, D.metricColorId));
-  const setAccent      = (accentId)      => onChange(buildDesign(D.appearanceId, accentId, D.profitColorId, D.lossColorId, D.metricColorId));
-  const setProfitColor = (profitColorId) => onChange(buildDesign(D.appearanceId, D.accentId, profitColorId, D.lossColorId, D.metricColorId));
-  const setLossColor   = (lossColorId)   => onChange(buildDesign(D.appearanceId, D.accentId, D.profitColorId, lossColorId, D.metricColorId));
-  const setMetricColor = (metricColorId) => onChange(buildDesign(D.appearanceId, D.accentId, D.profitColorId, D.lossColorId, metricColorId));
+  const setAppearance  = (appearanceId)  => onChange(buildDesign(appearanceId, D.accentId, D.profitColorId, D.lossColorId, D.metricColorId, D.breakEvenColorId));
+  const setAccent      = (accentId)      => onChange(buildDesign(D.appearanceId, accentId, D.profitColorId, D.lossColorId, D.metricColorId, D.breakEvenColorId));
+  const setProfitColor = (profitColorId) => onChange(buildDesign(D.appearanceId, D.accentId, profitColorId, D.lossColorId, D.metricColorId, D.breakEvenColorId));
+  const setLossColor   = (lossColorId)   => onChange(buildDesign(D.appearanceId, D.accentId, D.profitColorId, lossColorId, D.metricColorId, D.breakEvenColorId));
+  const setMetricColor = (metricColorId) => onChange(buildDesign(D.appearanceId, D.accentId, D.profitColorId, D.lossColorId, metricColorId, D.breakEvenColorId));
+  const setBreakEvenColor = (breakEvenColorId) => onChange(buildDesign(D.appearanceId, D.accentId, D.profitColorId, D.lossColorId, D.metricColorId, breakEvenColorId));
   const reset = () => onChange(defaultDesign());
 
   return (
@@ -48,7 +49,7 @@ export default function SettingsPage({ design, onChange }) {
           </div>
         </div>
 
-        {/* Accent keeps its swatch palette (stored by swatch id, or hex when custom); Profit/Loss/Metric are custom-only. */}
+        {/* Accent keeps its swatch palette (stored by swatch id, or hex when custom); Profit/Loss/Metric/Break-even are custom-only. */}
         <ColorSetting D={D} title="Interface Accent Color" color={D.blue} swatches={COLOR_LIST}
           onChange={(hex, meta) => setAccent(meta?.id || hex)} onReset={() => setAccent(DEFAULT_ACCENT_ID)} />
         <ColorSetting D={D} title="Profit Color" color={D.green}
@@ -57,6 +58,8 @@ export default function SettingsPage({ design, onChange }) {
           onChange={setLossColor} onReset={() => setLossColor(DEFAULT_LOSS_COLOR_ID)} />
         <ColorSetting D={D} title="Metric Color" color={D.metric}
           onChange={setMetricColor} onReset={() => setMetricColor(DEFAULT_METRIC_COLOR_ID)} />
+        <ColorSetting D={D} title="Break-even Color" color={D.breakEven}
+          onChange={setBreakEvenColor} onReset={() => setBreakEvenColor(DEFAULT_BREAK_EVEN_COLOR_ID)} />
 
         <button onClick={reset} style={{ padding: "10px 24px", background: "transparent", border: `1px solid ${D.border}`, borderRadius: 10, color: D.textMuted, cursor: "pointer", fontSize: 13, alignSelf: "flex-start" }}>
           Reset to default
