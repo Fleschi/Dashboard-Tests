@@ -17,24 +17,15 @@ export async function saveJournalEntry(entry) {
   const { data, error } = await supabase
     .from("journal_entries")
     .insert([{
-      day:                     entry.day,
-      time_entered:            entry.time_entered            || null,
-      daily_bias:              entry.daily_bias               || null,
-      pnl:                     entry.pnl ?? null,
-      tod_time:                entry.tod_time                 || null,
-      notes:                   entry.notes                    || null,
-      key_takeaway:            entry.key_takeaway              || null,
-      screenshot_htf_url:      entry.screenshot_htf_url      || null,
-      screenshot_tod_url:      entry.screenshot_tod_url      || null,
-      screenshot_my_trade_url: entry.screenshot_my_trade_url || null,
-      // New free-form document body (titles/paragraphs/tables/images) used by
-      // the redesigned editor. Defaults to `{}` at the DB level, but we pass
-      // it explicitly whenever the caller has one so a brand-new entry
-      // created from the new editor is saved with its content from the start.
-      content:                 entry.content ?? {},
+      day:          entry.day,
+      time_entered: entry.time_entered || null,
+      pnl:          entry.pnl ?? null,
+      tod_time:     entry.tod_time     || null,
+      // Free-form document body (titles/paragraphs/tables/images) from the editor.
+      content:      entry.content ?? {},
       // Tags live in their own column (uuid[] of journal_tags ids), never
       // inside `content`.
-      tag_ids:                 entry.tag_ids ?? [],
+      tag_ids:      entry.tag_ids ?? [],
     }])
     .select()
     .single();
@@ -45,24 +36,13 @@ export async function saveJournalEntry(entry) {
 export async function updateJournalEntry(id, entry) {
   const updates = {
     day:          entry.day,
-    time_entered: entry.time_entered   || null,
+    time_entered: entry.time_entered || null,
     pnl:          entry.pnl ?? null,
-    tod_time:     entry.tod_time       || null,
+    tod_time:     entry.tod_time     || null,
   };
-  // Legacy fields (daily_bias, notes, key_takeaway, the 3 screenshot URLs)
-  // and the new `content` are all applied ONLY when the caller actually
-  // supplies them. The new editor's payload only ever contains the 4 top
-  // fields + `content`, so this is what stops it from silently wiping the
-  // legacy columns back to null on every save, before the migration step
-  // has had a chance to carry their data into `content`.
-  if (entry.daily_bias              !== undefined) updates.daily_bias              = entry.daily_bias;
-  if (entry.notes                   !== undefined) updates.notes                   = entry.notes;
-  if (entry.key_takeaway            !== undefined) updates.key_takeaway            = entry.key_takeaway;
-  if (entry.screenshot_htf_url      !== undefined) updates.screenshot_htf_url      = entry.screenshot_htf_url;
-  if (entry.screenshot_tod_url      !== undefined) updates.screenshot_tod_url      = entry.screenshot_tod_url;
-  if (entry.screenshot_my_trade_url !== undefined) updates.screenshot_my_trade_url = entry.screenshot_my_trade_url;
-  if (entry.content                 !== undefined) updates.content                 = entry.content;
-  if (entry.tag_ids                 !== undefined) updates.tag_ids                 = entry.tag_ids;
+  // `content` and `tag_ids` are only applied when the caller supplies them.
+  if (entry.content !== undefined) updates.content = entry.content;
+  if (entry.tag_ids !== undefined) updates.tag_ids = entry.tag_ids;
 
   const { data, error } = await supabase
     .from("journal_entries")
